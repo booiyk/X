@@ -1,11 +1,13 @@
 # X — toko pakaian + dashboard admin
 
-Situs statis (tanpa build) dengan dashboard admin di `/#/admin`.
+Situs statis (tanpa build). Toko untuk pembeli ada di alamat utama, dashboard admin di `/admin`.
 Data produk, foto, dan video disimpan di **Supabase** (gratis), situs di-host di **Vercel**.
 Pembayaran belum ada (checkout masih simulasi).
 
 ## Isi paket
 - `index.html` — toko dan dashboard
+- `admin.html` — pintu masuk dashboard (membuka `/admin`)
+- `vercel.json` — pengaturan alamat bersih
 - `config.js` — tempat mengisi data Supabase
 - `supabase.sql` — pembuat tabel dan aturan keamanan
 - `media/` — foto hero bawaan (`hero-pria.jpg`, `hero-wanita.jpg`). Video opsional: taruh `media/video.mp4`
@@ -27,7 +29,7 @@ Pembayaran belum ada (checkout masih simulasi).
 3. Situs aktif di `nama-proyek.vercel.app`. Domain sendiri bisa ditambah di **Settings → Domains**.
 
 ## 4. Memakai dashboard
-Buka `alamat-situs/#/admin` (atau klik **Admin** di footer), lalu masuk dengan akun tadi.
+Buka `alamat-situs/admin` (tidak ada tautannya di toko, hanya Anda yang tahu), lalu masuk dengan akun tadi.
 - **Produk**: klik *Impor produk contoh* sekali untuk mengisi contoh, lalu ubah atau hapus. Foto diunggah langsung dari komputer atau ponsel.
 - **Kronologi**: kelola barang arsip per musim.
 - **Tampilan**: ganti foto hero Pria dan Wanita serta video layar penuh.
