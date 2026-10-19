@@ -183,13 +183,42 @@ header{grid-template-columns:1fr auto;padding:16px 16px 0}
 #checkout{grid-template-columns:1fr}.cl{padding:30px 16px}.cr{border:0;border-top:1px solid #e5e5e5;padding:30px 16px}
 }
 @media (prefers-reduced-motion:reduce){*,.film::before,.film::after{animation:none!important;transition:none!important}.car{overflow-x:auto}}
+
+.bg{display:none;width:18px;height:18px;vertical-align:-3px;margin-right:2px}
+@media (max-width:1100px){.grid5{grid-template-columns:repeat(3,1fr)}.pd{gap:12px}.pd .l{padding:0 8px}}
+@media (max-width:860px){
+header{grid-template-columns:auto 1fr auto;align-items:center;padding:10px 16px 0}
+.logo{grid-column:1;grid-row:1;font-size:30px;line-height:.8;padding-bottom:10px}
+.hnav{grid-column:2;grid-row:1;justify-self:center;gap:18px;padding:0 0 10px;font-size:15px}
+.hright{grid-column:3;grid-row:1;padding:0 0 10px;font-size:15px}
+.bg{display:inline-block}.cl{display:none}
+.menu{grid-column:1/-1;grid-row:2;margin:0 -16px}
+.menu>div{padding:6px 0 36px}.menu a{font-size:30px}
+#shop,#pdp,#kr,#admin{padding:84px 16px 60px}
+.title{margin-bottom:28px}.title h1{font-size:26px}.btn-d{font-size:17px;padding:11px 14px}
+.filters{margin:-12px 0 20px;flex-wrap:wrap;justify-content:flex-start}
+.grid3,.grid5{grid-template-columns:repeat(2,1fr);gap:28px 12px}
+.pcard b{font-size:16px}
+.pd{grid-template-columns:1fr;gap:18px;min-height:0}
+.pd .m{order:-1}.pd .m svg,.pd .m img{max-height:52vh}
+.pd .l{padding:0}.pd h1{font-size:28px;text-align:left}
+.pd .r{align-items:stretch}.pd .r .btn-d{width:100%}.sz{justify-content:flex-start}
+.rh{margin:56px 0 28px;font-size:28px}
+.ar{flex-basis:62vw}
+.pane{padding:16px}.pane span{font-size:20px}
+.vidfoot{left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+footer{padding:16px}
+.drawer{width:100%}
+.ci .row{grid-auto-flow:row}.clogo{font-size:48px}
+}
+@media (max-width:380px){.hnav{gap:12px;font-size:14px}.hright{font-size:14px}}
 </style>
 </head>
 <body>
 <header>
   <a class="logo" href="#/">X</a>
   <nav class="hnav" aria-label="Navigasi utama"><a href="#/pria" data-g="pria">Pria</a><a href="#/kronologi" data-g="kronologi">Kronologi</a><a href="#/wanita" data-g="wanita">Wanita</a></nav>
-  <div class="hright"><button id="cartBtn">Keranjang (<span id="cn">0</span>)</button></div>
+  <div class="hright"><button id="cartBtn" aria-label="Keranjang"><svg class="bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="cl">Keranjang </span>(<span id="cn">0</span>)</button></div>
   <div class="menu" id="menu" aria-label="Kategori"><div id="mi"></div></div>
 </header>
 
@@ -411,7 +440,7 @@ function route(keep){
   if(page==='admin'&&!(keep&&ED))renderAdmin();
   if(!keep)scrollTo(0,0);
 }
-addEventListener('hashchange',()=>route());drawCart();route();
+addEventListener('hashchange',()=>route());drawCart();
 
 /* ===== video & tampilan ===== */
 const D0M=$('#hM').src,D0W=$('#hW').src;let curV=null;
@@ -420,12 +449,15 @@ function setVideo(src){
   const f=$('#film'),b=$('#snd'),o=f.querySelector('video');if(o)o.remove();
   f.classList.remove('real');b.hidden=true;if(!src)return;
   const v=document.createElement('video');
-  v.src=src;v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;
+  v.src=src;v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.setAttribute('muted','');v.setAttribute('playsinline','');v.preload='auto';
   f.append(v);f.classList.add('real');b.hidden=false;
   v.addEventListener('error',()=>{v.remove();f.classList.remove('real');b.hidden=true});
 }
 $('#snd').onclick=()=>{const v=$('#film video');if(v){v.muted=!v.muted;$('#snd').setAttribute('aria-pressed',String(!v.muted))}};
-function applyCfg(){$('#hM').src=CFG.heroM||D0M;$('#hW').src=CFG.heroW||D0W;setVideo(CFG.video||VIDEO_SRC)}
+const MQ=matchMedia('(max-width:860px)');
+const pickVideo=()=>(MQ.matches&&CFG.videoM)||CFG.video||VIDEO_SRC;
+MQ.addEventListener?MQ.addEventListener('change',()=>applyCfg()):MQ.addListener(()=>applyCfg());
+function applyCfg(){$('#hM').src=CFG.heroM||D0M;$('#hW').src=CFG.heroW||D0W;setVideo(pickVideo())}
 applyCfg();
 
 /* ===== pesanan ===== */
@@ -461,7 +493,7 @@ function listK(){
 }
 function listT(){
   const f=(k,l,v)=>`<div class="af">${l}<div class="pv">${CFG[k]?(v?`<video src="${esc(CFG[k])}" muted></video>`:`<img src="${esc(CFG[k])}" alt="">`):'Bawaan'}</div><input type="file" accept="${v?'video/*':'image/*'}" data-cfg="${k}"> ${CFG[k]?`<button data-a="rcfg" data-k="${k}">Pakai bawaan</button>`:''}</div>`;
-  return `<div class="afg">${f('heroM','Foto hero Pria')}${f('heroW','Foto hero Wanita')}${f('video','Video layar penuh (mp4, maks 20 MB)',1)}</div>`;
+  return `<div class="afg">${f('heroM','Foto hero Pria')}${f('heroW','Foto hero Wanita')}${f('video','Video laptop (mp4, maks 20 MB)',1)}${f('videoM','Video khusus HP (potret 9:16, mp4)',1)}</div>`;
 }
 function listO(){
   return ORDERS.length?ORDERS.map(o=>{const n=o.info||{};return `<div class="ar2"><div></div><div>${esc(o.no)} · ${esc((n.fn||'')+' '+(n.ln||''))}<small>${new Date(o.ts).toLocaleString('id-ID')} · ${R(o.total||0)} · ${(o.items||[]).map(x=>esc(x.n)+' ('+esc(x.z)+') ×'+x.q).join(', ')}<br>${esc(n.address||'')}, ${esc(n.city||'')} ${esc(n.zip||'')} · ${esc(n.email||'')} · ${esc(n.phone||'')}</small></div><select data-st="${o.id}">${['baru','diproses','dikirim','selesai'].map(s=>`<option${s===o.status?' selected':''}>${s}</option>`).join('')}</select></div>`}).join(''):'<p class="note">Belum ada pesanan.</p>';
@@ -517,6 +549,7 @@ $('#admin').addEventListener('submit',async e=>{
 });
 
 /* ===== Supabase ===== */
+function refresh(){cart=cart.filter(c=>PM(c.id));if($('#checkout').hidden)drawCart();route(true)}
 const CF=window.X_CONFIG||{};
 const sb=(window.supabase&&CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY)?supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY):null;
 async function setCfg(c){await ok(sb.from('site').upsert({id:'config',data:c}));await loadAll()}
@@ -535,6 +568,9 @@ if(sb){
   sb.auth.getSession().then(({data})=>{CAN=!!data.session;loadAll()});
   sb.auth.onAuthStateChange((_e,x)=>{const was=CAN;CAN=!!x;if(was!==CAN)loadAll()});
 }
+
+/* mulai: dijalankan terakhir supaya semua bagian sudah siap */
+route();
 </script>
 </body>
 </html>
