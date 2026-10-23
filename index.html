@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap"></noscript>
 <style>
 :root{--bg:#07090d;--fg:#efede9;--mute:#8d8a85;--line:#23262b;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body.light{--bg:#fff;--fg:#111;--mute:#6f6f6f;--line:#e5e5e5}
@@ -241,6 +242,21 @@ html,body{max-width:100%;overflow-x:hidden}
 .pt div{display:flex;gap:8px;margin-top:4px;font:400 12px Arial,sans-serif;text-transform:none}
 .pt button{color:#111;text-decoration:underline}
 @media (max-width:860px){.gal img{max-height:52vh}.thumbs img{max-height:none}}
+
+/* ===== kutipan blackletter ===== */
+.quote{display:grid;place-items:center;min-height:60svh;padding:64px 22px;background:#000;color:#fff;text-align:center;text-transform:none}
+.quote p{font:700 clamp(32px,6.5vw,84px)/1.15 "UnifrakturCook","Pirata One","Old English Text MT",serif;letter-spacing:0;max-width:18ch;margin:0 auto}
+
+/* ===== media produk (foto & video) rasio 4:5 ===== */
+.pimg{aspect-ratio:4/5}
+.pimg img,.pimg video,.th img,.th video,.ar2 .t video{width:100%;height:100%;object-fit:cover}
+.gal{max-width:min(100%,calc(68vh*.8));margin:0 auto}
+.gal img,.gal video{flex:0 0 100%;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center}
+.pd .m .gal img,.pd .m .gal video{max-height:none}
+.thumbs button{aspect-ratio:4/5;width:44px;height:55px}
+.thumbs img,.thumbs video{width:100%;height:100%;object-fit:cover;display:block}
+.pt video{width:96px;height:120px;object-fit:cover;background:#f5f5f5;display:block}
+@media (max-width:860px){.gal{max-width:min(100%,calc(52vh*.8))}}
 </style>
 </head>
 <body>
@@ -256,6 +272,9 @@ html,body{max-width:100%;overflow-x:hidden}
     <a class="pane" href="#/pria"><img id="hM" fetchpriority="high" decoding="async" class="ph" style="--o:70% 30%" alt=""><span>Pria</span><i>→</i></a>
     <a class="pane" href="#/wanita"><img id="hW" fetchpriority="high" decoding="async" class="ph" style="--o:40% 40%" alt=""><span>Wanita</span><i>→</i></a>
   </div>
+  <section class="quote" aria-label="Moto">
+    <p>We will attend to every crying baby</p>
+  </section>
   <section class="vidsec" aria-label="Video koleksi">
     <div class="film" id="film"></div>
     <div class="vidfoot">
@@ -298,12 +317,14 @@ const S={
  gem:V('<circle cx="50" cy="58" r="26"/><circle cx="50" cy="58" r="18"/><path d="M42 32l8-12 8 12"/>','gem')
 };
 const imgList=i=>{const v=i&&i.img;if(!v)return [];if(v[0]==='['){try{const a=JSON.parse(v);return Array.isArray(a)?a.filter(Boolean).slice(0,10):[]}catch(e){return []}}return [v]};
-const pic=i=>{const u=imgList(i)[0];return u?`<img src="${esc(u)}" alt="" loading="lazy" decoding="async">`:S[i.s]};
+const isV=u=>/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
+const vEl=u=>`<video src="${esc(u)}" muted loop playsinline autoplay preload="metadata"></video>`;
+const pic=i=>{const L=imgList(i),u=L.find(x=>!isV(x))||L[0];return u?(isV(u)?vEl(u):`<img src="${esc(u)}" alt="" loading="lazy" decoding="async">`):S[i.s]};
 const galHTML=i=>{
   const L=imgList(i);if(!L.length)return S[i.s];
-  const im=L.map((u,k)=>`<img src="${esc(u)}" alt="${esc(i.n)} ${k+1}"${k?' loading="lazy"':''} decoding="async">`).join('');
+  const im=L.map((u,k)=>isV(u)?vEl(u):`<img src="${esc(u)}" alt="${esc(i.n)} ${k+1}"${k?' loading="lazy"':''} decoding="async">`).join('');
   if(L.length===1)return `<div class="gal">${im}</div>`;
-  return `<div class="gal" id="gal">${im}</div><div class="thumbs" id="thumbs">${L.map((u,k)=>`<button data-th="${k}" aria-label="Foto ${k+1}" aria-current="${k===0}"><img src="${esc(u)}" alt=""></button>`).join('')}</div>`;
+  return `<div class="gal" id="gal">${im}</div><div class="thumbs" id="thumbs">${L.map((u,k)=>`<button data-th="${k}" aria-label="Media ${k+1}" aria-current="${k===0}">${isV(u)?`<video src="${esc(u)}#t=0.1" muted preload="metadata"></video>`:`<img src="${esc(u)}" alt="">`}</button>`).join('')}</div>`;
 };
 const DS={
  coat:'Mantel kulit domba panjang. Lapisan twill viskos di badan, kupro bergaris di lengan. Kerah lancip. Saku belah di pinggang. Dibuat di Indonesia.',
@@ -527,8 +548,8 @@ let AT='produk',ED=null,CD='',FL='',LERR='',CA='',PH=[];
 const fi=(l,n,v,t='text')=>`<label class="af">${l}<input name="${n}" type="${t}" value="${esc(v??'')}"></label>`;
 const fs=(l,n,o,v)=>`<label class="af">${l}<select name="${n}">${o.map(([k,t])=>`<option value="${k}"${k===v?' selected':''}>${t}</option>`).join('')}</select></label>`;
 const fc=(l,n,v)=>`<label class="af"><input type="checkbox" name="${n}"${v?' checked':''}> ${l}</label>`;
-const pgInner=()=>PH.length?PH.map((u,k)=>`<div class="pt"><img src="${esc(u)}" alt=""><em>${k+1}</em><div>${k?`<button type="button" data-a="phmain" data-k="${k}">Utama</button>`:''}<button type="button" data-a="phdel" data-k="${k}" aria-label="Hapus foto ${k+1}">Hapus</button></div></div>`).join(''):'<div class="pv">Belum ada foto</div>';
-const photosHTML=()=>`<div class="af">Foto (maksimal 10, foto pertama jadi foto utama)<div class="pgrid" id="pgrid">${pgInner()}</div><input type="file" accept="image/*" multiple id="pf"${PH.length>=10?' disabled':''}> <span id="pcount">${PH.length}/10</span></div>`;
+const pgInner=()=>PH.length?PH.map((u,k)=>`<div class="pt">${isV(u)?`<video src="${esc(u)}" muted preload="metadata"></video>`:`<img src="${esc(u)}" alt="">`}<em>${k+1}</em><div>${k?`<button type="button" data-a="phmain" data-k="${k}">Utama</button>`:''}<button type="button" data-a="phdel" data-k="${k}" aria-label="Hapus media ${k+1}">Hapus</button></div></div>`).join(''):'<div class="pv">Belum ada foto</div>';
+const photosHTML=()=>`<div class="af">Foto &amp; video (maksimal 10, media pertama jadi tampilan utama, rasio tampil 4:5)<div class="pgrid" id="pgrid">${pgInner()}</div><input type="file" accept="image/*,video/*" multiple id="pf"${PH.length>=10?' disabled':''}> <span id="pcount">${PH.length}/10</span></div>`;
 function renderPG(){const g=$('#pgrid');if(!g)return;g.innerHTML=pgInner();$('#pcount').textContent=PH.length+'/10';const f=$('#pf');if(f)f.disabled=PH.length>=10}
 function formHTML(){
   const d=ED.data,btn='<div class="bar2"><button class="btn-d">Simpan</button><button type="button" class="btn-l" data-a="cancel">Batal</button></div>';
@@ -575,7 +596,7 @@ async function shrink(f,max){
     return t&&t.size<f.size?new File([t],f.name.replace(/\.\w+$/,'')+'.webp',{type:'image/webp'}):f;
   }catch(e){return f}
 }
-const up=async f=>{f=await shrink(f,1600);const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});if(error)throw error;return sb.storage.from('media').getPublicUrl(n).data.publicUrl};
+const up=async f=>{if(f.type.startsWith('video/')&&f.size>50*1024*1024)throw new Error('Video maksimal 50 MB');f=await shrink(f,1600);const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});if(error)throw error;return sb.storage.from('media').getPublicUrl(n).data.publicUrl};
 async function seed(kind){
   flash('Mengimpor…');
   if(kind==='p')await ok(sb.from('products').upsert(DEF.map(({id,nw,...d})=>({id:'d'+id,nw:!!nw,...d}))));
