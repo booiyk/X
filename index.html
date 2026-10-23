@@ -323,14 +323,16 @@ const archItems=(g,c)=>ARCHDB?ARCHDB.filter(a=>a.season===g+':'+c||(!String(a.se
 const H=$('header'),links=[...document.querySelectorAll('[data-g]')];let mg='pria';
 function openMenu(x){mg=x;const L=x==='kronologi'?GEN:CATS;$('#mi').innerHTML=L.map(([k,l])=>`<a href="#/${x}/${k}">${l}</a>`).join('');links.forEach(a=>a.classList.toggle('on',a.dataset.g===x));H.classList.add('open')}
 function closeMenu(){H.classList.remove('open')}
+const TOUCH=()=>matchMedia('(hover:none)').matches;
 links.forEach(a=>{
-  a.addEventListener('mouseenter',()=>openMenu(a.dataset.g));
-  a.addEventListener('focus',()=>openMenu(a.dataset.g));
+  a.addEventListener('mouseenter',()=>{if(!TOUCH())openMenu(a.dataset.g)});
+  a.addEventListener('focus',()=>{if(!TOUCH())openMenu(a.dataset.g)});
   a.addEventListener('click',e=>{
-    if(matchMedia('(hover:none)').matches&&!(H.classList.contains('open')&&mg===a.dataset.g)){e.preventDefault();openMenu(a.dataset.g)}else closeMenu();
+    if(TOUCH()){e.preventDefault();if(H.classList.contains('open')&&mg===a.dataset.g)closeMenu();else openMenu(a.dataset.g)}
+    else closeMenu();
   });
 });
-H.addEventListener('mouseleave',closeMenu);
+H.addEventListener('mouseleave',()=>{if(!TOUCH())closeMenu()});
 H.addEventListener('focusout',e=>{if(!H.contains(e.relatedTarget))closeMenu()});
 $('#menu').addEventListener('click',closeMenu);
 document.addEventListener('click',e=>{if(!H.contains(e.target))closeMenu()});
@@ -523,7 +525,7 @@ function listK(){
 }
 function listT(){
   const f=(k,l,v)=>`<div class="af">${l}<div class="pv">${CFG[k]?(v?`<video src="${esc(CFG[k])}" muted></video>`:`<img src="${esc(CFG[k])}" alt="">`):'Bawaan'}</div><input type="file" accept="${v?'video/*':'image/*'}" data-cfg="${k}"> ${CFG[k]?`<button data-a="rcfg" data-k="${k}">Pakai bawaan</button>`:''}</div>`;
-  return `<div class="afg">${f('heroM','Foto hero Pria')}${f('heroW','Foto hero Wanita')}${f('video','Video laptop (mp4, maks 50 MB)',1)}${f('videoM','Video khusus HP (potret 9:16, mp4, maks 50 MB)',1)}</div>`;
+  return `<div class="afg">${f('heroM','Foto hero Pria')}${f('heroW','Foto hero Wanita')}${f('video','Video laptop (mp4, maks 20 MB)',1)}${f('videoM','Video khusus HP (potret 9:16, mp4)',1)}</div>`;
 }
 function listO(){
   return (ORDERS.length?`<div class="bar2">${daBtn('orders',ORDERS.length)}</div>${daWarn('orders',ORDERS.length)}`:'')+(ORDERS.length?ORDERS.map(o=>{const n=o.info||{};return `<div class="ar2"><div></div><div>${esc(o.no)} · ${esc((n.fn||'')+' '+(n.ln||''))}<small>${new Date(o.ts).toLocaleString('id-ID')} · ${R(o.total||0)} · ${(o.items||[]).map(x=>esc(x.n)+' ('+esc(x.z)+') ×'+x.q).join(', ')}<br>${esc(n.address||'')}, ${esc(n.city||'')} ${esc(n.zip||'')} · ${esc(n.email||'')} · ${esc(n.phone||'')}</small></div><select data-st="${o.id}">${['baru','diproses','dikirim','selesai'].map(s=>`<option${s===o.status?' selected':''}>${s}</option>`).join('')}</select></div>`}).join(''):'<p class="note">Belum ada pesanan.</p>');
@@ -548,11 +550,7 @@ async function shrink(f,max){
     return t&&t.size<f.size?new File([t],f.name.replace(/\.\w+$/,'')+'.webp',{type:'image/webp'}):f;
   }catch(e){return f}
 }
-const MAX_VIDEO=50*1024*1024; // batas ukuran upload video: 50 MB
-const MB=n=>(n/1048576).toFixed(1).replace('.',',')+' MB';
-const up=async f=>{
-  if(f.type.startsWith('video/')&&f.size>MAX_VIDEO)throw new Error('Video terlalu besar ('+MB(f.size)+'). Maksimal 50 MB — kompres dulu atau pilih video lain.');
-  f=await shrink(f,1600);const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});if(error)throw error;return sb.storage.from('media').getPublicUrl(n).data.publicUrl};
+const up=async f=>{f=await shrink(f,1600);const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});if(error)throw error;return sb.storage.from('media').getPublicUrl(n).data.publicUrl};
 async function seed(kind){
   flash('Mengimpor…');
   if(kind==='p')await ok(sb.from('products').upsert(DEF.map(({id,nw,...d})=>({id:'d'+id,nw:!!nw,...d}))));
@@ -579,20 +577,12 @@ $('#admin').addEventListener('click',async e=>{
   }catch(err){flash('Gagal: '+(err.message||err.code||err))}
 });
 $('#admin').addEventListener('change',async e=>{
-  const t=e.target,pv=$('#pv'),old=pv?pv.innerHTML:'';
+  const t=e.target;
   try{
-    if(t.id==='pf'&&t.files[0]){pv.textContent='Mengunggah…';const u=await up(t.files[0]);document.querySelector('[name=img]').value=u;pv.innerHTML=`<img src="${esc(u)}" alt="">`}
-    else if(t.dataset.cfg&&t.files[0]){
-      const file=t.files[0];
-      if(/^video/.test(t.dataset.cfg)&&!file.type.startsWith('video/'))throw new Error('File harus berupa video (mp4).');
-      if(file.type.startsWith('video/')&&file.size>MAX_VIDEO)throw new Error('Video terlalu besar ('+MB(file.size)+'). Maksimal 50 MB — kompres dulu atau pilih video lain.');
-      FL='Mengunggah…';renderAdmin();const u=await up(file);await setCfg({...CFG,[t.dataset.cfg]:u});flash('Tersimpan')}
+    if(t.id==='pf'&&t.files[0]){$('#pv').textContent='Mengunggah…';const u=await up(t.files[0]);document.querySelector('[name=img]').value=u;$('#pv').innerHTML=`<img src="${esc(u)}" alt="">`}
+    else if(t.dataset.cfg&&t.files[0]){FL='Mengunggah…';renderAdmin();const u=await up(t.files[0]);await setCfg({...CFG,[t.dataset.cfg]:u});flash('Tersimpan')}
     else if(t.dataset.st){await ok(sb.from('orders').update({status:t.value}).eq('id',t.dataset.st))}
-  }catch(err){
-    const m='Gagal: '+(err.message||err.code||err);
-    if(t.id==='pf'){pv.innerHTML=old;t.value='';alert(m)} // jangan render ulang: isian form yang belum disimpan tetap aman
-    else flash(m)
-  }
+  }catch(err){flash('Gagal: '+(err.message||err.code||err))}
 });
 $('#admin').addEventListener('submit',async e=>{
   e.preventDefault();
