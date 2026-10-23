@@ -247,16 +247,12 @@ html,body{max-width:100%;overflow-x:hidden}
 .quote{display:grid;place-items:center;min-height:60svh;padding:64px 22px;background:#000;color:#fff;text-align:center;text-transform:none}
 .quote p{font:700 clamp(32px,6.5vw,84px)/1.15 "UnifrakturCook","Pirata One","Old English Text MT",serif;letter-spacing:0;max-width:18ch;margin:0 auto}
 
-/* ===== media produk (foto & video) rasio 4:5 ===== */
-.pimg{aspect-ratio:4/5}
-.pimg img,.pimg video,.th img,.th video,.ar2 .t video{width:100%;height:100%;object-fit:cover}
-.gal{max-width:min(100%,calc(68vh*.8));margin:0 auto}
-.gal img,.gal video{flex:0 0 100%;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center}
-.pd .m .gal img,.pd .m .gal video{max-height:none}
-.thumbs button{aspect-ratio:4/5;width:44px;height:55px}
-.thumbs img,.thumbs video{width:100%;height:100%;object-fit:cover;display:block}
-.pt video{width:96px;height:120px;object-fit:cover;background:#f5f5f5;display:block}
-@media (max-width:860px){.gal{max-width:min(100%,calc(52vh*.8))}}
+/* ===== media produk: video mengikuti aturan foto (rasio asli, tanpa potong) ===== */
+.pimg img,.pimg video,.th img,.th video,.ar2 .t video{width:100%;height:100%;object-fit:contain}
+.gal img,.gal video{flex:0 0 100%;width:100%;max-height:68vh;object-fit:contain;scroll-snap-align:center}
+.thumbs img,.thumbs video{width:100%;height:100%;max-height:none;object-fit:contain;display:block}
+.pt video{width:96px;height:96px;object-fit:contain;background:#f5f5f5;display:block}
+@media (max-width:860px){.gal img,.gal video{max-height:52vh}}
 </style>
 </head>
 <body>
@@ -549,7 +545,7 @@ const fi=(l,n,v,t='text')=>`<label class="af">${l}<input name="${n}" type="${t}"
 const fs=(l,n,o,v)=>`<label class="af">${l}<select name="${n}">${o.map(([k,t])=>`<option value="${k}"${k===v?' selected':''}>${t}</option>`).join('')}</select></label>`;
 const fc=(l,n,v)=>`<label class="af"><input type="checkbox" name="${n}"${v?' checked':''}> ${l}</label>`;
 const pgInner=()=>PH.length?PH.map((u,k)=>`<div class="pt">${isV(u)?`<video src="${esc(u)}" muted preload="metadata"></video>`:`<img src="${esc(u)}" alt="">`}<em>${k+1}</em><div>${k?`<button type="button" data-a="phmain" data-k="${k}">Utama</button>`:''}<button type="button" data-a="phdel" data-k="${k}" aria-label="Hapus media ${k+1}">Hapus</button></div></div>`).join(''):'<div class="pv">Belum ada foto</div>';
-const photosHTML=()=>`<div class="af">Foto &amp; video (maksimal 10, media pertama jadi tampilan utama, rasio tampil 4:5)<div class="pgrid" id="pgrid">${pgInner()}</div><input type="file" accept="image/*,video/*" multiple id="pf"${PH.length>=10?' disabled':''}> <span id="pcount">${PH.length}/10</span></div>`;
+const photosHTML=()=>`<div class="af">Foto &amp; video (maksimal 10, media pertama jadi tampilan utama)<div class="pgrid" id="pgrid">${pgInner()}</div><input type="file" accept="image/*,video/*" multiple id="pf"${PH.length>=10?' disabled':''}> <span id="pcount">${PH.length}/10</span></div>`;
 function renderPG(){const g=$('#pgrid');if(!g)return;g.innerHTML=pgInner();$('#pcount').textContent=PH.length+'/10';const f=$('#pf');if(f)f.disabled=PH.length>=10}
 function formHTML(){
   const d=ED.data,btn='<div class="bar2"><button class="btn-d">Simpan</button><button type="button" class="btn-l" data-a="cancel">Batal</button></div>';
