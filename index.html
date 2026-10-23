@@ -227,6 +227,20 @@ html,body{max-width:100%;overflow-x:hidden}
 .krt a{color:var(--mute);border-bottom:1px solid transparent}.krt a[aria-current]{color:var(--fg);border-color:var(--fg)}
 #kr .ar{flex-basis:clamp(150px,17vw,260px);margin-right:20px}
 @media (max-width:860px){#kr .ar{flex-basis:44vw;margin-right:14px}.krh{margin:30px 0 10px;font-size:22px}.krt{margin:-8px 0 0}}
+.gal{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.gal::-webkit-scrollbar{display:none}
+.gal img{flex:0 0 100%;width:100%;max-height:68vh;object-fit:contain;scroll-snap-align:center}
+.thumbs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.thumbs button{width:54px;height:54px;border:1px solid transparent;padding:2px;opacity:.5}
+.thumbs button[aria-current="true"]{border-color:#111;opacity:1}
+.thumbs img{width:100%;height:100%;max-height:none;object-fit:contain}
+.pgrid{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 10px}
+.pt{width:96px;position:relative}
+.pt img{width:96px;height:96px;object-fit:contain;background:#f5f5f5;display:block}
+.pt em{position:absolute;left:4px;top:4px;font:600 12px Arial,sans-serif;background:#111;color:#fff;padding:1px 6px;font-style:normal}
+.pt div{display:flex;gap:8px;margin-top:4px;font:400 12px Arial,sans-serif;text-transform:none}
+.pt button{color:#111;text-decoration:underline}
+@media (max-width:860px){.gal img{max-height:52vh}.thumbs img{max-height:none}}
 </style>
 </head>
 <body>
@@ -283,7 +297,14 @@ const S={
  acc:V('<rect x="8" y="42" width="84" height="14" rx="2"/><rect x="44" y="39" width="12" height="20"/>'),
  gem:V('<circle cx="50" cy="58" r="26"/><circle cx="50" cy="58" r="18"/><path d="M42 32l8-12 8 12"/>','gem')
 };
-const pic=i=>i.img?`<img src="${esc(i.img)}" alt="" loading="lazy" decoding="async">`:S[i.s];
+const imgList=i=>{const v=i&&i.img;if(!v)return [];if(v[0]==='['){try{const a=JSON.parse(v);return Array.isArray(a)?a.filter(Boolean).slice(0,10):[]}catch(e){return []}}return [v]};
+const pic=i=>{const u=imgList(i)[0];return u?`<img src="${esc(u)}" alt="" loading="lazy" decoding="async">`:S[i.s]};
+const galHTML=i=>{
+  const L=imgList(i);if(!L.length)return S[i.s];
+  const im=L.map((u,k)=>`<img src="${esc(u)}" alt="${esc(i.n)} ${k+1}"${k?' loading="lazy"':''} decoding="async">`).join('');
+  if(L.length===1)return `<div class="gal">${im}</div>`;
+  return `<div class="gal" id="gal">${im}</div><div class="thumbs" id="thumbs">${L.map((u,k)=>`<button data-th="${k}" aria-label="Foto ${k+1}" aria-current="${k===0}"><img src="${esc(u)}" alt=""></button>`).join('')}</div>`;
+};
 const DS={
  coat:'Mantel kulit domba panjang. Lapisan twill viskos di badan, kupro bergaris di lengan. Kerah lancip. Saku belah di pinggang. Dibuat di Indonesia.',
  tee:'Kaos katun 240 gsm, cuci enzim. Potongan boxy dengan bahu jatuh. Sablon kecil di dada. Dibuat di Indonesia.',
@@ -373,11 +394,13 @@ let pI=null,selZ=null;
 function renderPdp(i){
   pI=i;const zs=SZ(i);selZ=zs.find((z,k)=>!sold(i,k));
   const rel=ITEMS.filter(x=>x.g===i.g&&x.id!==i.id).sort((a,b)=>{const n=ITEMS.length,x=ITEMS.indexOf(i);return((ITEMS.indexOf(a)-x+n)%n)-((ITEMS.indexOf(b)-x+n)%n)}).slice(0,5);
-  $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s])}</p></div><div class="m">${pic(i)}</div>
+  $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s])}</p></div><div class="m">${galHTML(i)}</div>
   <div class="r"><div class="sz" id="sz">${zs.map((z,k)=>`<button ${sold(i,k)?'disabled':''} aria-pressed="${z===selZ}">${z}</button>`).join('')}</div><button class="btn-d" id="add">Tambah ke keranjang — ${R(i.p)}</button></div></div>
   <h2 class="rh">Terkait</h2><div class="grid5">${rel.map(card).join('')}</div>`;
 }
+$('#pdp').addEventListener('scroll',e=>{const g=e.target;if(g.id!=='gal')return;const k=Math.round(g.scrollLeft/g.clientWidth);document.querySelectorAll('#thumbs button').forEach((b,j)=>b.setAttribute('aria-current',String(j===k)))},true);
 $('#pdp').onclick=e=>{
+  const th=e.target.closest('[data-th]');if(th){const g=$('#gal');g.scrollTo({left:+th.dataset.th*g.clientWidth,behavior:'smooth'})}
   const z=e.target.closest('#sz button');
   if(z&&!z.disabled){selZ=z.textContent;document.querySelectorAll('#sz button').forEach(b=>b.setAttribute('aria-pressed',b===z))}
   if(e.target.closest('#add')&&selZ){
@@ -500,15 +523,17 @@ function saveOrder(){
 const TIPE=[['coat','Mantel / jaket'],['tee','Kaos'],['hood','Hoodie'],['pants','Celana'],['shoe','Sepatu'],['bag','Tas'],['acc','Aksesoris'],['gem','Perhiasan']];
 const GEN=[['pria','Pria'],['wanita','Wanita']],CATO=CATS.slice(1);
 const csv=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
-let AT='produk',ED=null,CD='',FL='',LERR='',CA='';
+let AT='produk',ED=null,CD='',FL='',LERR='',CA='',PH=[];
 const fi=(l,n,v,t='text')=>`<label class="af">${l}<input name="${n}" type="${t}" value="${esc(v??'')}"></label>`;
 const fs=(l,n,o,v)=>`<label class="af">${l}<select name="${n}">${o.map(([k,t])=>`<option value="${k}"${k===v?' selected':''}>${t}</option>`).join('')}</select></label>`;
 const fc=(l,n,v)=>`<label class="af"><input type="checkbox" name="${n}"${v?' checked':''}> ${l}</label>`;
-const photoF=u=>`<div class="af">Foto<div class="pv" id="pv">${u?`<img src="${esc(u)}" alt="">`:'Belum ada'}</div><input type="file" accept="image/*" id="pf"><input type="hidden" name="img" value="${esc(u||'')}"> <button type="button" data-a="rmimg">Hapus foto</button></div>`;
+const pgInner=()=>PH.length?PH.map((u,k)=>`<div class="pt"><img src="${esc(u)}" alt=""><em>${k+1}</em><div>${k?`<button type="button" data-a="phmain" data-k="${k}">Utama</button>`:''}<button type="button" data-a="phdel" data-k="${k}" aria-label="Hapus foto ${k+1}">Hapus</button></div></div>`).join(''):'<div class="pv">Belum ada foto</div>';
+const photosHTML=()=>`<div class="af">Foto (maksimal 10, foto pertama jadi foto utama)<div class="pgrid" id="pgrid">${pgInner()}</div><input type="file" accept="image/*" multiple id="pf"${PH.length>=10?' disabled':''}> <span id="pcount">${PH.length}/10</span></div>`;
+function renderPG(){const g=$('#pgrid');if(!g)return;g.innerHTML=pgInner();$('#pcount').textContent=PH.length+'/10';const f=$('#pf');if(f)f.disabled=PH.length>=10}
 function formHTML(){
   const d=ED.data,btn='<div class="bar2"><button class="btn-d">Simpan</button><button type="button" class="btn-l" data-a="cancel">Batal</button></div>';
-  if(ED.kind==='p')return `<form id="af"><h3 class="fh">${ED.isNew?'Produk baru':'Ubah produk'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,d.g)}${fs('Kategori','c',CATO,d.c)}${fs('Tipe barang','s',TIPE,d.s)}${fi('Ukuran (pisah koma, kosong = bawaan)','z',(d.z||[]).join(', '))}${fi('Ukuran habis (pisah koma)','x',(d.x||[]).join(', '))}<div>${fc('Tampil di Koleksi Baru','nw',d.nw)}${fc('Sembunyikan dari toko','hidden',d.hidden)}</div></div><label class="af">Deskripsi<textarea name="d">${esc(d.d||'')}</textarea></label>${photoF(d.img)}${btn}</form>`;
-  return `<form id="af"><h3 class="fh">${ED.isNew?'Barang arsip baru':'Ubah barang arsip'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,String(d.season||'').split(':')[0]||'pria')}${fs('Kategori','c',CATO,String(d.season||'').split(':')[1]||catOf(d.s))}${fs('Tipe barang','s',TIPE,d.s)}</div>${photoF(d.img)}${btn}</form>`;
+  if(ED.kind==='p')return `<form id="af"><h3 class="fh">${ED.isNew?'Produk baru':'Ubah produk'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,d.g)}${fs('Kategori','c',CATO,d.c)}${fs('Tipe barang','s',TIPE,d.s)}${fi('Ukuran (pisah koma, kosong = bawaan)','z',(d.z||[]).join(', '))}${fi('Ukuran habis (pisah koma)','x',(d.x||[]).join(', '))}<div>${fc('Tampil di Koleksi Baru','nw',d.nw)}${fc('Sembunyikan dari toko','hidden',d.hidden)}</div></div><label class="af">Deskripsi<textarea name="d">${esc(d.d||'')}</textarea></label>${photosHTML()}${btn}</form>`;
+  return `<form id="af"><h3 class="fh">${ED.isNew?'Barang arsip baru':'Ubah barang arsip'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,String(d.season||'').split(':')[0]||'pria')}${fs('Kategori','c',CATO,String(d.season||'').split(':')[1]||catOf(d.s))}${fs('Tipe barang','s',TIPE,d.s)}</div>${photosHTML()}${btn}</form>`;
 }
 const row=(i,sub,acts)=>`<div class="ar2"><div class="t">${pic(i)}</div><div>${esc(i.n)}<small>${sub}</small></div><div class="ac">${acts}</div></div>`;
 const acts=i=>`<button data-a="edit" data-id="${i.id}">Ubah</button><button data-a="del" data-id="${i.id}">${CD===i.id?'Yakin hapus?':'Hapus'}</button>`;
@@ -562,11 +587,12 @@ $('#admin').addEventListener('click',async e=>{
   if(t.dataset.tab){AT=t.dataset.tab;ED=null;CD='';CA='';return renderAdmin()}
   const a=t.dataset.a,id=t.dataset.id,isP=AT==='produk';
   try{
-    if(a==='new'){ED=isP?{kind:'p',isNew:1,id:'p'+Date.now().toString(36),data:{g:'pria',c:'rtw',s:'tee',p:0}}:{kind:'a',isNew:1,id:'a'+Date.now().toString(36),data:{season:'pria:rtw',s:'tee',p:0}};renderAdmin()}
-    else if(a==='edit'){ED={kind:isP?'p':'a',id,data:{...(isP?ALL:ARC).find(x=>x.id===id)}};renderAdmin()}
+    if(a==='new'){PH=[];ED=isP?{kind:'p',isNew:1,id:'p'+Date.now().toString(36),data:{g:'pria',c:'rtw',s:'tee',p:0}}:{kind:'a',isNew:1,id:'a'+Date.now().toString(36),data:{season:'pria:rtw',s:'tee',p:0}};renderAdmin()}
+    else if(a==='edit'){const src=(isP?ALL:ARC).find(x=>x.id===id);PH=imgList(src);ED={kind:isP?'p':'a',id,data:{...src}};renderAdmin()}
     else if(a==='cancel'){ED=null;renderAdmin()}
     else if(a==='del'){if(CD!==id){CD=id;renderAdmin()}else{await ok(sb.from(isP?'products':'archive').delete().eq('id',id));CD='';await loadAll();flash('Dihapus')}}
-    else if(a==='rmimg'){document.querySelector('[name=img]').value='';$('#pv').textContent='Belum ada'}
+    else if(a==='phmain'){const k=+t.dataset.k;PH.unshift(PH.splice(k,1)[0]);renderPG()}
+    else if(a==='phdel'){PH.splice(+t.dataset.k,1);renderPG()}
     else if(a==='rcfg'){const c={...CFG};delete c[t.dataset.k];await setCfg(c);flash('Dikembalikan ke bawaan')}
     else if(a==='out'){await sb.auth.signOut();ED=null}
     else if(a==='delask'){CA=t.dataset.k;CD='';renderAdmin()}
@@ -579,7 +605,7 @@ $('#admin').addEventListener('click',async e=>{
 $('#admin').addEventListener('change',async e=>{
   const t=e.target;
   try{
-    if(t.id==='pf'&&t.files[0]){$('#pv').textContent='Mengunggah…';const u=await up(t.files[0]);document.querySelector('[name=img]').value=u;$('#pv').innerHTML=`<img src="${esc(u)}" alt="">`}
+    if(t.id==='pf'&&t.files.length){const fl=[...t.files].slice(0,10-PH.length);$('#pcount').textContent='Mengunggah…';try{for(const f of fl)PH.push(await up(f))}catch(err){$('#pcount').textContent='Gagal: '+(err.message||err.code||err)}t.value='';renderPG()}
     else if(t.dataset.cfg&&t.files[0]){FL='Mengunggah…';renderAdmin();const u=await up(t.files[0]);await setCfg({...CFG,[t.dataset.cfg]:u});flash('Tersimpan')}
     else if(t.dataset.st){await ok(sb.from('orders').update({status:t.value}).eq('id',t.dataset.st))}
   }catch(err){flash('Gagal: '+(err.message||err.code||err))}
@@ -588,7 +614,7 @@ $('#admin').addEventListener('submit',async e=>{
   e.preventDefault();
   if(e.target.id==='lg'){const g=new FormData(e.target);const {error}=await sb.auth.signInWithPassword({email:g.get('email'),password:g.get('password')});LERR=error?'Surel atau kata sandi salah.':'';renderAdmin();return}
   const f=new FormData(e.target),p=ED.kind==='p';
-  const base={n:String(f.get('n')).trim(),p:Math.max(0,+f.get('p')||0),s:f.get('s'),img:f.get('img')||''};
+  const base={n:String(f.get('n')).trim(),p:Math.max(0,+f.get('p')||0),s:f.get('s'),img:PH.length>1?JSON.stringify(PH):(PH[0]||'')};
   const data=p?{...base,g:f.get('g'),c:f.get('c'),nw:!!f.get('nw'),hidden:!!f.get('hidden'),d:String(f.get('d')).trim(),z:csv(f.get('z')),x:csv(f.get('x'))}:{...base,season:f.get('g')+':'+f.get('c')};
   try{await ok(sb.from(p?'products':'archive').upsert({id:ED.id,...data}));ED=null;await loadAll();flash('Tersimpan')}catch(err){flash('Gagal menyimpan: '+(err.message||err.code||err))}
 });
