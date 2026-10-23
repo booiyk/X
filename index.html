@@ -222,6 +222,11 @@ html,body{max-width:100%;overflow-x:hidden}
 .vid{opacity:0;transition:opacity .6s}.vid.on{opacity:1}
 .danger{border-color:#b00020;color:#b00020}
 .warn{background:#fff4f4;border:1px solid #b00020;padding:14px;margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;font:400 14px Arial,sans-serif;text-transform:none;letter-spacing:0;color:#111}
+.krh{font-size:clamp(22px,2.4vw,30px);margin:40px 0 14px;font-weight:600;line-height:1}
+.krt{display:flex;gap:22px;font-size:18px;margin:-20px 0 6px}
+.krt a{color:var(--mute);border-bottom:1px solid transparent}.krt a[aria-current]{color:var(--fg);border-color:var(--fg)}
+#kr .ar{flex-basis:clamp(150px,17vw,260px);margin-right:20px}
+@media (max-width:860px){#kr .ar{flex-basis:44vw;margin-right:14px}.krh{margin:30px 0 10px;font-size:22px}.krt{margin:-8px 0 0}}
 </style>
 </head>
 <body>
@@ -240,7 +245,7 @@ html,body{max-width:100%;overflow-x:hidden}
   <section class="vidsec" aria-label="Video koleksi">
     <div class="film" id="film"></div>
     <div class="vidfoot">
-      <a href="#/wanita">Musim Hujan / 26 →</a>
+      <a href="#/kronologi">Kronologi →</a>
       <button id="snd" hidden aria-label="Suara" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9v6h4l5 4V5L7 9z"/><path d="M16 9c1.5 1.5 1.5 4.5 0 6M19 6.5c3 3 3 8 0 11"/></svg></button>
     </div>
   </section>
@@ -267,7 +272,6 @@ const VIDEO_SRC="media/video.mp4"; // alamat file video (mp4)
 const $=s=>document.querySelector(s),R=n=>'Rp '+n.toLocaleString('id-ID');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const CATS=[['baru','Koleksi Baru'],['rtw','Siap Pakai'],['sepatu','Sepatu'],['tas','Tas'],['aksesoris','Aksesoris'],['perhiasan','Perhiasan']];
-const SEAS=[['mh26','Musim Hujan 26'],['km26','Kemarau 26'],['mh25','Musim Hujan 25'],['km25','Kemarau 25']];
 const V=(d,c='')=>`<svg class="sv ${c}" viewBox="0 0 100 100">${d}</svg>`;
 const S={
  tee:V('<path d="M34 12 18 22 8 40l14 7 6-8v49h44V39l6 8 14-7-10-18-16-10c-3 8-9 12-16 12s-13-4-16-12z"/>'),
@@ -310,12 +314,14 @@ const SZ=i=>i.z&&i.z.length?i.z:i.s==='shoe'?['39','40','41','42','43','44']:['t
 const sold=(i,k)=>SZ(i).length>1&&(i.x?i.x.includes(SZ(i)[k]):(hs(i.id)+k)%4===0);
 const card=i=>`<a class="pcard" href="#/p/${i.id}"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small></a>`;
 const AN={coat:['Jaket Kulit Klasik','Mantel Wol Lama'],tee:['Kaos Grafis Lama','Kaos Lengan Panjang'],hood:['Hoodie Zip Lama','Hoodie Bordir'],pants:['Celana Denim Robek','Celana Lipit Wol'],shoe:['Bot Kerja Kulit','Sepatu Loafer'],bag:['Tas Pos Kulit','Tas Punggung Kanvas'],acc:['Topi Bulu Pemburu','Ikat Pinggang Paku'],gem:['Kalung Elang Perak','Anting Salib Perak']};
-const arch=k=>ARCHDB?ARCHDB.filter(a=>a.season===SEAS[k][0]):dflt(k);
-const dflt=k=>Object.keys(AN).map((s,j)=>({n:AN[s][(k+j)%2],s,p:450000+((k*5+j*3)%9)*375000}));
+const CSH={rtw:['coat','tee','hood','pants'],sepatu:['shoe'],tas:['bag'],aksesoris:['acc'],perhiasan:['gem']};
+const dflt=(g,c)=>CSH[c].flatMap((s,j)=>AN[s].map((n,m)=>({n,s,p:350000+((j*5+m*3+(g==='pria'?0:2))%9)*325000})));
+const catOf=t=>Object.keys(CSH).find(c=>CSH[c].includes(t))||'rtw';
+const archItems=(g,c)=>ARCHDB?ARCHDB.filter(a=>a.season===g+':'+c||(!String(a.season).includes(':')&&catOf(a.s)===c)):dflt(g,c);
 
 /* ===== header & menu ===== */
 const H=$('header'),links=[...document.querySelectorAll('[data-g]')];let mg='pria';
-function openMenu(x){mg=x;const L=x==='kronologi'?SEAS:CATS;$('#mi').innerHTML=L.map(([k,l])=>`<a href="#/${x}/${k}">${l}</a>`).join('');links.forEach(a=>a.classList.toggle('on',a.dataset.g===x));H.classList.add('open')}
+function openMenu(x){mg=x;const L=x==='kronologi'?GEN:CATS;$('#mi').innerHTML=L.map(([k,l])=>`<a href="#/${x}/${k}">${l}</a>`).join('');links.forEach(a=>a.classList.toggle('on',a.dataset.g===x));H.classList.add('open')}
 function closeMenu(){H.classList.remove('open')}
 links.forEach(a=>{
   a.addEventListener('mouseenter',()=>openMenu(a.dataset.g));
@@ -378,14 +384,15 @@ $('#pdp').onclick=e=>{
 };
 
 /* ===== kronologi (arsip terjual) ===== */
-function renderKr(sid){
+function renderKr(g){
   if(!LOADED){$('#kr').innerHTML='<p class="note">Memuat…</p>';return}
-  const k=SEAS.findIndex(x=>x[0]===sid),L=k>=0?arch(k):SEAS.flatMap((_,j)=>arch(j));
-  if(!L.length){$('#kr').innerHTML=`<div class="title"><h1>Kronologi${k>=0?' &gt; '+SEAS[k][1]:''}</h1></div><p class="note">Belum ada barang di arsip.</p>`;return}
-  const t=L.map(i=>`<div class="ar"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small><em>Habis terjual</em></div>`).join('');
-  $('#kr').innerHTML=`<div class="title"><h1>Kronologi${k>=0?' &gt; '+SEAS[k][1]:''}</h1></div>
-  <div class="car" aria-label="Arsip barang terjual"><div class="track" style="--d:${L.length*4}s">${t}${t}</div></div>
-  <p class="note">Arsip barang yang sudah terjual habis. Arahkan kursor untuk menghentikan gerakan.</p>`;
+  g=g==='wanita'?'wanita':'pria';
+  const rows=CATO.map(([c,l])=>({l,L:archItems(g,c)})).filter(r=>r.L.length);
+  const head=`<div class="title"><h1>Kronologi &gt; ${g==='pria'?'Pria':'Wanita'}</h1></div><nav class="krt">${GEN.map(([k,l])=>`<a href="#/kronologi/${k}"${k===g?' aria-current="page"':''}>${l}</a>`).join('')}</nav>`;
+  if(!rows.length){$('#kr').innerHTML=head+'<p class="note">Belum ada barang di arsip.</p>';return}
+  const tile=i=>`<div class="ar"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small><em>Habis terjual</em></div>`;
+  const row=({l,L})=>{let b=L;while(b.length<6)b=b.concat(L);const t=b.map(tile).join('');return `<h2 class="krh">${l}</h2><div class="car" aria-label="Arsip ${l}"><div class="track" style="--d:${b.length*4}s">${t}${t}</div></div>`};
+  $('#kr').innerHTML=head+rows.map(row).join('')+'<p class="note">Arsip barang yang sudah terjual habis. Arahkan kursor untuk menghentikan gerakan.</p>';
 }
 
 /* ===== checkout ===== */
@@ -499,10 +506,11 @@ const photoF=u=>`<div class="af">Foto<div class="pv" id="pv">${u?`<img src="${es
 function formHTML(){
   const d=ED.data,btn='<div class="bar2"><button class="btn-d">Simpan</button><button type="button" class="btn-l" data-a="cancel">Batal</button></div>';
   if(ED.kind==='p')return `<form id="af"><h3 class="fh">${ED.isNew?'Produk baru':'Ubah produk'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,d.g)}${fs('Kategori','c',CATO,d.c)}${fs('Tipe barang','s',TIPE,d.s)}${fi('Ukuran (pisah koma, kosong = bawaan)','z',(d.z||[]).join(', '))}${fi('Ukuran habis (pisah koma)','x',(d.x||[]).join(', '))}<div>${fc('Tampil di Koleksi Baru','nw',d.nw)}${fc('Sembunyikan dari toko','hidden',d.hidden)}</div></div><label class="af">Deskripsi<textarea name="d">${esc(d.d||'')}</textarea></label>${photoF(d.img)}${btn}</form>`;
-  return `<form id="af"><h3 class="fh">${ED.isNew?'Barang arsip baru':'Ubah barang arsip'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Musim','season',SEAS,d.season)}${fs('Tipe barang','s',TIPE,d.s)}</div>${photoF(d.img)}${btn}</form>`;
+  return `<form id="af"><h3 class="fh">${ED.isNew?'Barang arsip baru':'Ubah barang arsip'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,String(d.season||'').split(':')[0]||'pria')}${fs('Kategori','c',CATO,String(d.season||'').split(':')[1]||catOf(d.s))}${fs('Tipe barang','s',TIPE,d.s)}</div>${photoF(d.img)}${btn}</form>`;
 }
 const row=(i,sub,acts)=>`<div class="ar2"><div class="t">${pic(i)}</div><div>${esc(i.n)}<small>${sub}</small></div><div class="ac">${acts}</div></div>`;
 const acts=i=>`<button data-a="edit" data-id="${i.id}">Ubah</button><button data-a="del" data-id="${i.id}">${CD===i.id?'Yakin hapus?':'Hapus'}</button>`;
+const archLabel=s=>{const [g,c]=String(s||'').split(':'),cn=(CATO.find(x=>x[0]===c)||[])[1];return cn?`${g} · ${cn}`:'format lama · tampil di Pria dan Wanita (ubah untuk memilih)'};
 const daBtn=(k,n)=>n&&CA!==k?`<button class="btn-l danger" data-a="delask" data-k="${k}">Hapus semua</button>`:'';
 const daWarn=(k,n)=>n&&CA===k?`<div class="warn"><span>Hapus semua ${n} data ini? Tidak bisa dibatalkan.</span><button class="btn-d" data-a="delall" data-k="${k}">Ya, hapus semua</button><button class="btn-l" data-a="delno">Batal</button></div>`:'';
 function listP(){
@@ -511,7 +519,7 @@ function listP(){
 }
 function listK(){
   return `<div class="bar2"><button class="btn-d" data-a="new">+ Barang arsip</button>${ARC.length?'':'<button class="btn-l" data-a="seedA">Impor arsip contoh</button>'}${daBtn('archive',ARC.length)}</div>${daWarn('archive',ARC.length)}`+
-  (ARC.length?ARC.map(i=>row(i,`${(SEAS.find(s=>s[0]===i.season)||[0,'-'])[1]} · ${R(i.p||0)}`,acts(i))).join(''):'<p class="note">Belum ada arsip. Halaman Kronologi tampil kosong sampai Anda menambah atau mengimpor arsip.</p>');
+  (ARC.length?ARC.map(i=>row(i,`${archLabel(i.season)} · ${R(i.p||0)}`,acts(i))).join(''):'<p class="note">Belum ada arsip. Halaman Kronologi tampil kosong sampai Anda menambah atau mengimpor arsip.</p>');
 }
 function listT(){
   const f=(k,l,v)=>`<div class="af">${l}<div class="pv">${CFG[k]?(v?`<video src="${esc(CFG[k])}" muted></video>`:`<img src="${esc(CFG[k])}" alt="">`):'Bawaan'}</div><input type="file" accept="${v?'video/*':'image/*'}" data-cfg="${k}"> ${CFG[k]?`<button data-a="rcfg" data-k="${k}">Pakai bawaan</button>`:''}</div>`;
@@ -544,7 +552,7 @@ const up=async f=>{f=await shrink(f,1600);const n=Date.now()+'-'+f.name.replace(
 async function seed(kind){
   flash('Mengimpor…');
   if(kind==='p')await ok(sb.from('products').upsert(DEF.map(({id,nw,...d})=>({id:'d'+id,nw:!!nw,...d}))));
-  else{const rows=[];for(let k=0;k<4;k++)dflt(k).forEach((a,j)=>rows.push({...a,id:`d${k}-${j}`,season:SEAS[k][0]}));await ok(sb.from('archive').upsert(rows))}
+  else{const rows=[];GEN.forEach(([g])=>CATO.forEach(([c])=>dflt(g,c).forEach((a,j)=>rows.push({...a,id:`d-${g}-${c}-${j}`,season:g+':'+c}))));await ok(sb.from('archive').upsert(rows))}
   await loadAll();flash('Selesai diimpor');
 }
 $('#admin').addEventListener('click',async e=>{
@@ -552,7 +560,7 @@ $('#admin').addEventListener('click',async e=>{
   if(t.dataset.tab){AT=t.dataset.tab;ED=null;CD='';CA='';return renderAdmin()}
   const a=t.dataset.a,id=t.dataset.id,isP=AT==='produk';
   try{
-    if(a==='new'){ED=isP?{kind:'p',isNew:1,id:'p'+Date.now().toString(36),data:{g:'pria',c:'rtw',s:'tee',p:0}}:{kind:'a',isNew:1,id:'a'+Date.now().toString(36),data:{season:'mh26',s:'tee',p:0}};renderAdmin()}
+    if(a==='new'){ED=isP?{kind:'p',isNew:1,id:'p'+Date.now().toString(36),data:{g:'pria',c:'rtw',s:'tee',p:0}}:{kind:'a',isNew:1,id:'a'+Date.now().toString(36),data:{season:'pria:rtw',s:'tee',p:0}};renderAdmin()}
     else if(a==='edit'){ED={kind:isP?'p':'a',id,data:{...(isP?ALL:ARC).find(x=>x.id===id)}};renderAdmin()}
     else if(a==='cancel'){ED=null;renderAdmin()}
     else if(a==='del'){if(CD!==id){CD=id;renderAdmin()}else{await ok(sb.from(isP?'products':'archive').delete().eq('id',id));CD='';await loadAll();flash('Dihapus')}}
@@ -579,7 +587,7 @@ $('#admin').addEventListener('submit',async e=>{
   if(e.target.id==='lg'){const g=new FormData(e.target);const {error}=await sb.auth.signInWithPassword({email:g.get('email'),password:g.get('password')});LERR=error?'Surel atau kata sandi salah.':'';renderAdmin();return}
   const f=new FormData(e.target),p=ED.kind==='p';
   const base={n:String(f.get('n')).trim(),p:Math.max(0,+f.get('p')||0),s:f.get('s'),img:f.get('img')||''};
-  const data=p?{...base,g:f.get('g'),c:f.get('c'),nw:!!f.get('nw'),hidden:!!f.get('hidden'),d:String(f.get('d')).trim(),z:csv(f.get('z')),x:csv(f.get('x'))}:{...base,season:f.get('season')};
+  const data=p?{...base,g:f.get('g'),c:f.get('c'),nw:!!f.get('nw'),hidden:!!f.get('hidden'),d:String(f.get('d')).trim(),z:csv(f.get('z')),x:csv(f.get('x'))}:{...base,season:f.get('g')+':'+f.get('c')};
   try{await ok(sb.from(p?'products':'archive').upsert({id:ED.id,...data}));ED=null;await loadAll();flash('Tersimpan')}catch(err){flash('Gagal menyimpan: '+(err.message||err.code||err))}
 });
 
