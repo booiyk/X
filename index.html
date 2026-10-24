@@ -23,19 +23,26 @@ button,input,select{font:inherit;color:inherit;letter-spacing:inherit;text-trans
 button{background:none;border:0;cursor:pointer;padding:0}
 :focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
-header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 22px;color:#fff;transition:background .3s,color .3s}
+/* ===== HEADER (Diperkecil untuk desktop) ===== */
+header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 30px;color:#fff;transition:background .3s,color .3s}
 body.light header{background:#fff;color:#111}
-.burger{grid-column:1;justify-self:start;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;width:30px;height:30px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.burger{grid-column:1;justify-self:start;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:24px;height:24px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .burger span{display:block;height:1.5px;width:100%;background:currentColor;transition:transform .3s,width .3s;transform-origin:center}
 .burger span:last-child{width:60%}
-.burger[aria-expanded="true"] span:first-child{transform:translateY(3.75px) rotate(45deg)}
-.burger[aria-expanded="true"] span:last-child{width:100%;transform:translateY(-3.75px) rotate(-45deg)}
-.logo{grid-column:2;justify-self:center;text-align:center;font:500 20px/.95 "Times New Roman",Times,serif;letter-spacing:.01em;text-transform:none;white-space:nowrap}
+.burger[aria-expanded="true"] span:first-child{transform:translateY(3.25px) rotate(45deg)}
+.burger[aria-expanded="true"] span:last-child{width:100%;transform:translateY(-3.25px) rotate(-45deg)}
+
+.logo{grid-column:2;justify-self:center;text-align:center;font:500 clamp(16px, 2vw, 22px)/1 "Times New Roman",Times,serif;letter-spacing:.05em;text-transform:none;white-space:nowrap}
 .logo span{display:block}
+
 .hright{grid-column:3;justify-self:end;font-size:15px}
+#cartBtn{display:flex;align-items:center;gap:6px;font-size:15px;letter-spacing:.05em}
+#cartBtn .bg{width:18px;height:18px}
+.ct{display:none} /* Sembunyikan teks "Keranjang" di desktop */
 .bounce{animation:bnc .5s ease}
 @keyframes bnc{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.94)}100%{transform:scale(1)}}
 
+/* ===== PANEL MENU ===== */
 .navpanel{position:fixed;top:0;left:0;bottom:0;width:min(360px,88vw);background:var(--bg);color:var(--fg);z-index:45;padding:calc(20px + env(safe-area-inset-top,0px)) 22px calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto;transform:translateX(-100%);visibility:hidden;box-shadow:6px 0 40px rgba(0,0,0,.35);transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s .4s}
 .navpanel.on{transform:translateX(0);visibility:visible;transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s}
 .nptop{display:flex;justify-content:space-between;align-items:center;padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:8px}
@@ -57,6 +64,7 @@ body.light header{background:#fff;color:#111}
 .npnav details a:hover{color:var(--fg);padding-left:18px}
 .npnav details a[aria-current="page"]{color:var(--fg);border-left-color:#e07a3c;padding-left:18px}
 
+/* ===== KONTEN ===== */
 .duo{display:grid;grid-template-columns:1fr 1fr;height:100vh;min-height:560px;background:#000}
 .pane{position:relative;isolation:isolate;display:flex;justify-content:space-between;align-items:flex-end;padding:22px;color:#fff;overflow:hidden;background:#000}
 .pane::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#000b 0,#0000 30%),linear-gradient(0deg,#000c 0,#0000 38%),#0003}
@@ -228,6 +236,10 @@ main.page.out{animation:pgOut .2s ease both}
 .danger{border-color:#b00020;color:#b00020}
 .warn{background:#fff4f4;border:1px solid #b00020;padding:14px;margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;font:400 14px Arial,sans-serif;text-transform:none;letter-spacing:0;color:#111}
 
+/* Animasi loading upload */
+@keyframes blink{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+.uploading{animation:blink 1.5s infinite;color:#e07a3c;font-weight:600}
+
 .krh{font-size:clamp(22px,2.4vw,30px);margin:40px 0 14px;font-weight:600;line-height:1}
 .krt{display:flex;gap:22px;font-size:18px;margin:-20px 0 6px}
 .krt a{color:var(--mute);border-bottom:1px solid transparent}.krt a[aria-current]{color:var(--fg);border-color:var(--fg)}
@@ -277,14 +289,14 @@ main.page.out{animation:pgOut .2s ease both}
 @media (max-width:860px){
   header{padding:12px 16px;gap:8px}
   .logo{font-size:16px}
-  .hright{font-size:14px}
+  .hright{font-size:15px}
+  #cartBtn .bg{width:18px;height:18px}
+  .ct{display:inline} /* Munculkan teks di HP */
   .burger{width:26px;height:26px;gap:5px}
   .burger span{height:1.4px}
   .burger[aria-expanded="true"] span:first-child{transform:translateY(3.2px) rotate(45deg)}
   .burger[aria-expanded="true"] span:last-child{transform:translateY(-3.2px) rotate(-45deg)}
   .navpanel{width:min(340px,92vw);padding-left:18px;padding-right:18px}
-  .bg{display:inline-block;width:16px;height:16px;vertical-align:-3px;margin-right:2px}
-  .ct{display:none}
   .duo{grid-template-columns:1fr;grid-template-rows:1fr 1fr;height:100svh}
   #shop,#pdp,#kr,#admin,#legal{padding:84px 16px 60px}
   .title{margin-bottom:28px}.title h1{font-size:26px}.btn-d{font-size:17px;padding:11px 14px}
@@ -312,7 +324,6 @@ main.page.out{animation:pgOut .2s ease both}
   .cookie{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:12px 14px;font-size:12.5px}
 }
 @media (max-width:480px){.exb{gap:8px}.exb span{font-size:13px;padding:0 4px;text-align:center;line-height:1.1;white-space:nowrap}.logo{font-size:15px}}
-@media (max-width:380px){.hright{font-size:14px}}
 @media (prefers-reduced-motion:reduce){
   *,.film::before,.film::after{animation:none!important;transition:none!important}
   .car{overflow-x:auto}.navpanel{transition:none!important}.cookie{transition:none!important}
@@ -957,7 +968,17 @@ async function shrink(f,max){
     return t&&t.size<f.size?new File([t],f.name.replace(/\.\w+$/,'')+'.webp',{type:'image/webp'}):f;
   }catch(e){return f}
 }
-const up=async f=>{if(f.type.startsWith('video/')&&f.size>50*1024*1024)throw new Error('Video maksimal 50 MB');f=await shrink(f,1600);const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});if(error)throw error;return sb.storage.from('media').getPublicUrl(n).data.publicUrl};
+
+// Maksimal ukuran video diturunkan jadi 20MB (dari 50MB) agar unggah lebih wajar
+const up=async f=>{
+  if(f.type.startsWith('video/')&&f.size>20*1024*1024)throw new Error('Video maksimal 20 MB (kompres dulu)');
+  f=await shrink(f,1600);
+  const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});
+  if(error)throw error;
+  return sb.storage.from('media').getPublicUrl(n).data.publicUrl;
+};
+
 async function seed(kind){
   flash('Mengimpor…');
   if(kind==='p')await ok(sb.from('products').upsert(DEF.map(({id,nw,...d})=>({id:'d'+id,nw:!!nw,...d}))));
@@ -989,12 +1010,19 @@ $('#admin').addEventListener('change',async e=>{
   try{
     if(t.id==='pf'&&t.files.length){
       const fl=[...t.files].slice(0,10-PH.length);
-      const c=$('#pcount');if(c)c.textContent='Mengunggah…';
+      const c=$('#pcount');if(c){c.className='uploading';c.textContent='Mengunggah... (jangan tutup halaman)'}
+      t.disabled=true;
       try{for(const f of fl)PH.push(await up(f))}
-      catch(err){if(c)c.textContent='Gagal: '+(err.message||err.code||err);t.value='';return}
-      t.value='';renderPG();
+      catch(err){
+        if(c){c.className='';c.textContent='Gagal: '+(err.message||err.code||err)}
+        t.value='';t.disabled=false;return
+      }
+      t.value='';t.disabled=false;renderPG();
     }
-    else if(t.dataset.cfg&&t.files[0]){FL='Mengunggah…';renderAdmin();const u=await up(t.files[0]);await setCfg({...CFG,[t.dataset.cfg]:u});flash('Tersimpan')}
+    else if(t.dataset.cfg&&t.files[0]){
+      FL='<span class="uploading">Mengunggah... (jangan tutup halaman)</span>';renderAdmin();
+      const u=await up(t.files[0]);await setCfg({...CFG,[t.dataset.cfg]:u});flash('Tersimpan');
+    }
     else if(t.dataset.st){await ok(sb.from('orders').update({status:t.value}).eq('id',t.dataset.st))}
   }catch(err){flash('Gagal: '+(err.message||err.code||err))}
 });
