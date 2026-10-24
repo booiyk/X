@@ -23,7 +23,7 @@ button,input,select{font:inherit;color:inherit;letter-spacing:inherit;text-trans
 button{background:none;border:0;cursor:pointer;padding:0}
 :focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
-/* ===== HEADER (Diperkecil untuk desktop) ===== */
+/* ===== HEADER ===== */
 header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 30px;color:#fff;transition:background .3s,color .3s}
 body.light header{background:#fff;color:#111}
 .burger{grid-column:1;justify-self:start;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:24px;height:24px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -31,14 +31,12 @@ body.light header{background:#fff;color:#111}
 .burger span:last-child{width:60%}
 .burger[aria-expanded="true"] span:first-child{transform:translateY(3.25px) rotate(45deg)}
 .burger[aria-expanded="true"] span:last-child{width:100%;transform:translateY(-3.25px) rotate(-45deg)}
-
 .logo{grid-column:2;justify-self:center;text-align:center;font:500 clamp(16px, 2vw, 22px)/1 "Times New Roman",Times,serif;letter-spacing:.05em;text-transform:none;white-space:nowrap}
 .logo span{display:block}
-
 .hright{grid-column:3;justify-self:end;font-size:15px}
 #cartBtn{display:flex;align-items:center;gap:6px;font-size:15px;letter-spacing:.05em}
 #cartBtn .bg{width:18px;height:18px}
-.ct{display:none} /* Sembunyikan teks "Keranjang" di desktop */
+.ct{display:none}
 .bounce{animation:bnc .5s ease}
 @keyframes bnc{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.94)}100%{transform:scale(1)}}
 
@@ -236,7 +234,6 @@ main.page.out{animation:pgOut .2s ease both}
 .danger{border-color:#b00020;color:#b00020}
 .warn{background:#fff4f4;border:1px solid #b00020;padding:14px;margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;font:400 14px Arial,sans-serif;text-transform:none;letter-spacing:0;color:#111}
 
-/* Animasi loading upload */
 @keyframes blink{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
 .uploading{animation:blink 1.5s infinite;color:#e07a3c;font-weight:600}
 
@@ -291,7 +288,7 @@ main.page.out{animation:pgOut .2s ease both}
   .logo{font-size:16px}
   .hright{font-size:15px}
   #cartBtn .bg{width:18px;height:18px}
-  .ct{display:inline} /* Munculkan teks di HP */
+  .ct{display:inline}
   .burger{width:26px;height:26px;gap:5px}
   .burger span{height:1.4px}
   .burger[aria-expanded="true"] span:first-child{transform:translateY(3.2px) rotate(45deg)}
@@ -788,297 +785,4 @@ function leftHTML(){
   <div class="row"><input name="city" placeholder="Kota" required value="${esc(info.city||'')}"><select name="prov" aria-label="Provinsi">${PROV.map(p=>`<option${p===info.prov?' selected':''}>${p}</option>`).join('')}</select><input name="zip" placeholder="Kode pos" required value="${esc(info.zip||'')}"></div>
   <input name="phone" type="tel" placeholder="Telepon" value="${esc(info.phone||'')}"><div class="cfoot"><button class="cbtn">Lanjut ke pengiriman</button></div></form>`;
   const rows=`<div class="box"><div><span>Kontak</span><span>${esc(info.email||'')}</span></div><div><span>Kirim ke</span><span>${adr}</span></div></div>`;
-  if(step===2)return `${top}${rows}<form id="f2"><h3>Metode pengiriman</h3>${SH.map(([l,c])=>`<label class="opt"><input type="radio" name="ship" value="${c}" ${c===ship?'checked':''}><span>${l}</span><span>${R(c)}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Lanjut ke pembayaran</button></div></form>`;
-  const noPay=!sb;
-  return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3>${noPay?'<p class="flash" role="alert">Sistem pembayaran belum aktif. Hubungi pemilik toko.</p>':''}${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" value="${k}" ${k?'':'checked'}><span>${l}</span></label>`).join('')}<label class="chk pdp"><input type="checkbox" name="pdp" required><span>Saya telah membaca dan menyetujui <a href="#/legal" target="_blank" rel="noopener">Kebijakan Privasi</a> serta pemrosesan data pribadi saya sesuai UU PDP.</span></label><div class="cfoot"><button class="cbtn"${noPay?' disabled':''}>Bayar sekarang</button></div></form>`;
-}
-function renderCo(){$('#checkout').innerHTML=`<div class="cl"><div class="ci" id="cleft">${leftHTML()}</div></div><div class="cr"><div class="ci2" id="cright">${sumHTML()}</div></div>`}
-$('#checkout').addEventListener('submit',async e=>{
-  e.preventDefault();const fd=new FormData(e.target);
-  if(e.target.id==='f1'){info=Object.fromEntries(fd);step=2;payErr='';renderCo();scrollTo(0,0);return}
-  if(e.target.id==='f2'){ship=+fd.get('ship');step=3;payErr='';renderCo();scrollTo(0,0);return}
-  info.pay=PAY[+fd.get('pay')]||PAY[0];
-  info.pdp=true;
-  const btn=e.target.querySelector('.cbtn');
-  if(btn){btn.disabled=true;btn.textContent='Memproses…'}
-  payErr='';
-  orderNo='X-'+Math.floor(100000+Math.random()*900000);
-  const saved=await saveOrder();
-  if(!saved){
-    orderNo='';
-    if(!payErr)payErr='Pesanan gagal disimpan. Periksa koneksi Anda lalu coba lagi.';
-    renderCo();scrollTo(0,0);return;
-  }
-  payErr='';step=4;cart=[];saveCart();code='';dmsg='';
-  drawCart(false);renderCo();scrollTo(0,0);
-});
-$('#checkout').addEventListener('change',e=>{
-  if(e.target.name==='ship'){
-    ship=+e.target.value;
-    const r=$('#cright');if(r)r.innerHTML=sumHTML();
-  }
-});
-$('#checkout').addEventListener('click',e=>{
-  const s=e.target.closest('[data-s]');if(s){step=+s.dataset.s;payErr='';renderCo();scrollTo(0,0);return}
-  if(e.target.id==='da'){code=$('#dc').value.trim().toUpperCase();dmsg=code?(code==='X10'?'Diskon 10% diterapkan.':'Kode tidak valid.'):'';$('#cright').innerHTML=sumHTML()}
-});
-
-function syncNav(active){
-  navpanel.querySelectorAll('.npnav a').forEach(a=>{
-    const href=a.getAttribute('href').replace(/^#\//,'');
-    const on=active&&href.startsWith(active);
-    if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
-  });
-}
-
-let routeToken=0;
-function route(keep){
-  const p=location.hash.replace(/^#\/?/,'').split('/'),k=p[0];
-  const IT=k==='p'?PM(p[1]):null;
-  const gd=(k==='pria'||k==='wanita')?k:(IT?IT.g:null);
-  const page=IT?'pdp':gd?'shop':k==='kronologi'?'kr':k==='checkout'?'checkout':k==='admin'?'admin':k==='legal'?'legal':'home';
-  const ids=['home','shop','pdp','kr','checkout','admin','legal'];
-
-  if(!keep){closeNav();closeCart()}
-
-  const activeKey=gd||(k==='kronologi'?'kronologi':'');
-  syncNav(activeKey);
-
-  const doRender=()=>{
-    ids.forEach(x=>$('#'+x).hidden=x!==page);
-    document.body.classList.toggle('light',page!=='home');
-    document.body.classList.toggle('co',page==='checkout');
-    const el=$('#'+page);
-    el.classList.remove('out');
-    if(page==='shop'){curG=gd;curC=CATS.some(x=>x[0]===p[1])?p[1]:'baru';fopen=keep?fopen:false;renderShop()}
-    if(page==='pdp')renderPdp(IT);
-    if(page==='kr')renderKr(p[1]);
-    if(page==='checkout'&&!keep){
-      if(step===4){step=1;code='';dmsg='';orderNo=''}
-      payErr='';
-      renderCo();
-    }
-    if(page==='admin'&&!(keep&&ED))renderAdmin();
-    if(page==='home')initReveal();
-    if(!keep)scrollTo(0,0);
-  };
-
-  if(keep||RM.matches){doRender();return}
-
-  const token=++routeToken;
-  const vis=ids.map(x=>$('#'+x)).filter(el=>!el.hidden);
-  if(!vis.length){doRender();return}
-  vis.forEach(el=>el.classList.add('out'));
-  setTimeout(()=>{
-    if(token!==routeToken)return;
-    doRender();
-  },180);
-}
-addEventListener('hashchange',()=>route());drawCart(false);
-initReveal();
-
-/* ===== video ===== */
-const D0M='media/hero-pria.jpg',D0W='media/hero-wanita.jpg';let curV=null,CFGOK=false;
-function setVideo(src){
-  if(src===curV)return;curV=src;
-  const f=$('#film'),o=f.querySelector('video');if(o)o.remove();
-  f.classList.remove('real');
-  if(!src)return;
-  const v=document.createElement('video');
-  v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;
-  v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');
-  v.preload='none';
-  f.append(v);
-  v.addEventListener('loadeddata',()=>{f.classList.add('real');v.classList.add('on')});
-  const go=()=>{v.src=src;const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})};
-  if('IntersectionObserver' in window){const io=new IntersectionObserver((es,ob)=>{if(es.some(e=>e.isIntersecting)){ob.disconnect();go()}},{rootMargin:'0px 0px -40px 0px'});io.observe(f)}else go();
-  v.addEventListener('error',()=>{v.remove();f.classList.remove('real')});
-}
-const MQ=matchMedia('(max-width:860px)');
-const pickVideo=()=>(MQ.matches&&CFG.videoM)||CFG.video||VIDEO_SRC;
-MQ.addEventListener?MQ.addEventListener('change',()=>applyCfg()):MQ.addListener(()=>applyCfg());
-function setImg(el,src){if(el.dataset.s===src)return;el.dataset.s=src;el.classList.remove('on');el.onload=el.onerror=()=>el.classList.add('on');el.src=src}
-function applyCfg(){if(!CFGOK)return;setImg($('#hM'),CFG.heroM||D0M);setImg($('#hW'),CFG.heroW||D0W);setVideo(pickVideo())}
-try{const c=localStorage.getItem('x_cfg');if(c){CFG=JSON.parse(c)||{};CFGOK=true}}catch(e){}
-setTimeout(()=>{if(!CFGOK){CFGOK=true;applyCfg()}},3500);
-applyCfg();
-
-/* ===== saveOrder ===== */
-async function saveOrder(){
-  if(!sb){payErr='Sistem pembayaran belum aktif. Hubungi pemilik toko.';return false}
-  if(!cart.some(c=>PM(c.id))){payErr='Keranjang Anda kosong.';return false}
-  const items=cart.filter(c=>PM(c.id)).map(c=>{const i=PM(c.id);return{id:String(c.id),n:i.n,z:c.z,q:c.q,p:i.p}});
-  const total=subtotal()-disc()+ship;
-  const {error}=await sb.from('orders').insert({no:orderNo,items,total,info,ship,status:'baru',ts:Date.now()});
-  if(error){console.error(error);payErr='Gagal menyimpan pesanan. Periksa koneksi Anda lalu coba lagi.';return false}
-  return true;
-}
-
-/* ===== admin ===== */
-const TIPE=[['coat','Mantel / jaket'],['tee','Kaos'],['hood','Hoodie'],['pants','Celana'],['shoe','Sepatu'],['bag','Tas'],['acc','Aksesoris'],['gem','Perhiasan']];
-let AT='produk',ED=null,CD='',FL='',LERR='',CA='',PH=[];
-const fi=(l,n,v,t='text')=>`<label class="af">${l}<input name="${n}" type="${t}" value="${esc(v??'')}"></label>`;
-const fs=(l,n,o,v)=>`<label class="af">${l}<select name="${n}">${o.map(([k,t])=>`<option value="${k}"${k===v?' selected':''}>${t}</option>`).join('')}</select></label>`;
-const fc=(l,n,v)=>`<label class="af"><input type="checkbox" name="${n}"${v?' checked':''}> ${l}</label>`;
-const pgInner=()=>PH.length?PH.map((u,k)=>`<div class="pt">${isV(u)?`<video src="${esc(u)}" muted preload="metadata"></video>`:`<img src="${esc(u)}" alt="">`}<em>${k+1}</em><div>${k?`<button type="button" data-a="phmain" data-k="${k}">Utama</button>`:''}<button type="button" data-a="phdel" data-k="${k}" aria-label="Hapus media ${k+1}">Hapus</button></div></div>`).join(''):'<div class="pv">Belum ada foto</div>';
-const photosHTML=()=>`<div class="af">Foto &amp; video (maksimal 10, foto pertama menjadi tampilan utama)<div class="pgrid" id="pgrid">${pgInner()}</div><input type="file" accept="image/*,video/*" multiple id="pf"${PH.length>=10?' disabled':''}> <span id="pcount">${PH.length}/10</span></div>`;
-function renderPG(){const g=$('#pgrid');if(!g)return;g.innerHTML=pgInner();const c=$('#pcount');if(c)c.textContent=PH.length+'/10';const f=$('#pf');if(f)f.disabled=PH.length>=10}
-function formHTML(){
-  const d=ED.data,btn='<div class="bar2"><button class="btn-d">Simpan</button><button type="button" class="btn-l" data-a="cancel">Batal</button></div>';
-  if(ED.kind==='p')return `<form id="af"><h3 class="fh">${ED.isNew?'Produk baru':'Ubah produk'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fi('Stok (opsional, kosong = tak dibatasi)','stock',d.stock,'number')}${fs('Untuk','g',GEN,d.g)}${fs('Kategori','c',CATO,d.c)}${fs('Tipe barang','s',TIPE,d.s)}${fi('Ukuran (pisah koma, kosong = bawaan)','z',arr(d.z).join(', '))}${fi('Ukuran habis (pisah koma)','x',arr(d.x).join(', '))}<div>${fc('Tampil di Koleksi Baru','nw',d.nw)}${fc('Sembunyikan dari toko','hidden',d.hidden)}</div></div><label class="af">Deskripsi<textarea name="d">${esc(d.d||'')}</textarea></label>${photosHTML()}${btn}</form>`;
-  return `<form id="af"><h3 class="fh">${ED.isNew?'Barang arsip baru':'Ubah barang arsip'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,String(d.season||'').split(':')[0]||'pria')}${fs('Kategori','c',CATO,String(d.season||'').split(':')[1]||catOf(d.s))}${fs('Tipe barang','s',TIPE,d.s)}</div>${photosHTML()}${btn}</form>`;
-}
-const row=(i,sub,acts)=>`<div class="ar2"><div class="t">${pic(i)}</div><div>${esc(i.n)}<small>${sub}</small></div><div class="ac">${acts}</div></div>`;
-const acts=i=>`<button data-a="edit" data-id="${i.id}">Ubah</button><button data-a="del" data-id="${i.id}">${CD===i.id?'Yakin hapus?':'Hapus'}</button>`;
-const archLabel=s=>{const [g,c]=String(s||'').split(':'),cn=(CATO.find(x=>x[0]===c)||[])[1];return cn?`${g} · ${cn}`:'format lama · tampil di Pria dan Wanita (ubah untuk memilih)'};
-const daBtn=(k,n)=>n&&CA!==k?`<button class="btn-l danger" data-a="delask" data-k="${k}">Hapus semua</button>`:'';
-const daWarn=(k,n)=>n&&CA===k?`<div class="warn"><span>Hapus semua ${n} data ini? Tidak bisa dibatalkan.</span><button class="btn-d" data-a="delall" data-k="${k}">Ya, hapus semua</button><button class="btn-l" data-a="delno">Batal</button></div>`:'';
-function listP(){
-  return `<div class="bar2"><button class="btn-d" data-a="new">+ Produk baru</button>${ALL.length?'':'<button class="btn-l" data-a="seed">Impor produk contoh</button>'}${daBtn('products',ALL.length)}</div>${daWarn('products',ALL.length)}`+
-  (ALL.length?ALL.map(i=>row(i,`${i.g} · ${(CATS.find(c=>c[0]===i.c)||[0,i.c])[1]} · ${R(i.p||0)}${i.nw?' · Baru':''}${i.hidden?' · Disembunyikan':''}`,acts(i))).join(''):'<p class="note">Belum ada produk. Toko tampil kosong sampai Anda menambah atau mengimpor produk.</p>');
-}
-function listK(){
-  return `<div class="bar2"><button class="btn-d" data-a="new">+ Barang arsip</button>${ARC.length?'':'<button class="btn-l" data-a="seedA">Impor arsip contoh</button>'}${daBtn('archive',ARC.length)}</div>${daWarn('archive',ARC.length)}`+
-  (ARC.length?ARC.map(i=>row(i,`${archLabel(i.season)} · ${R(i.p||0)}`,acts(i))).join(''):'<p class="note">Belum ada arsip. Halaman Kronologi tampil kosong sampai Anda menambah atau mengimpor arsip.</p>');
-}
-function listT(){
-  const f=(k,l,v)=>`<div class="af">${l}<div class="pv">${CFG[k]?(v?`<video src="${esc(CFG[k])}" muted></video>`:`<img src="${esc(CFG[k])}" alt="">`):'Bawaan'}</div><input type="file" accept="${v?'video/*':'image/*'}" data-cfg="${k}"> ${CFG[k]?`<button data-a="rcfg" data-k="${k}">Pakai bawaan</button>`:''}</div>`;
-  return `<div class="afg">${f('heroM','Foto hero Pria')}${f('heroW','Foto hero Wanita')}${f('video','Video laptop (mp4, maks 20 MB)',1)}${f('videoM','Video khusus HP (potret 9:16, mp4)',1)}</div>`;
-}
-function listO(){
-  return (ORDERS.length?`<div class="bar2">${daBtn('orders',ORDERS.length)}</div>${daWarn('orders',ORDERS.length)}`:'')+(ORDERS.length?ORDERS.map(o=>{const n=o.info||{};return `<div class="ar2"><div></div><div>${esc(o.no)} · ${esc((n.fn||'')+' '+(n.ln||''))}<small>${new Date(o.ts).toLocaleString('id-ID')} · ${R(o.total||0)} · ${(o.items||[]).map(x=>esc(x.n)+' ('+esc(x.z)+') ×'+x.q).join(', ')}<br>${esc(n.address||'')}, ${esc(n.city||'')} ${esc(n.zip||'')} · ${esc(n.email||'')} · ${esc(n.phone||'')}${n.pay?' · '+esc(n.pay):''}</small></div><select data-st="${o.id}">${['baru','diproses','dikirim','selesai'].map(s=>`<option${s===o.status?' selected':''}>${s}</option>`).join('')}</select></div>`}).join(''):'<p class="note">Belum ada pesanan.</p>');
-}
-function renderAdmin(){
-  const el=$('#admin'),head='<div class="title"><h1>Dashboard</h1><a class="btn-d" href="#/">Lihat toko</a></div>';
-  if(!sb){el.innerHTML=head+'<p class="note">Dashboard belum terhubung. Isi config.js dengan data Supabase Anda (lihat README).</p>';return}
-  if(!CAN){el.innerHTML=head+`<form id="lg" class="afg"><h3 class="fh" style="grid-column:1/-1">Masuk admin</h3>${fi('Surel','email','','email')}${fi('Kata sandi','password','','password')}<div class="bar2" style="grid-column:1/-1"><button class="btn-d">Masuk</button></div>${LERR?`<p class="flash">${esc(LERR)}</p>`:''}</form>`;return}
-  const tabs=[['produk','Produk'],['kronologi','Kronologi'],['tampilan','Tampilan'],['pesanan','Pesanan']],fl=FL;FL='';
-  const body=ED?formHTML():AT==='produk'?listP():AT==='kronologi'?listK():AT==='tampilan'?listT():listO();
-  el.innerHTML=head+`<nav class="atabs">${tabs.map(([k,l])=>`<button data-tab="${k}" aria-pressed="${AT===k}">${l}</button>`).join('')}<button data-a="out">Keluar</button></nav>${fl?`<p class="flash">${esc(fl)}</p>`:''}${body}`;
-}
-const flash=m=>{FL=m;renderAdmin()};
-const ok=async q=>{const {error}=await q;if(error)throw error};
-async function shrink(f,max){
-  if(!/^image\/(jpe?g|png|webp)$/.test(f.type))return f;
-  try{
-    const bm=await createImageBitmap(f),k=Math.min(1,max/Math.max(bm.width,bm.height));
-    const c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);
-    c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
-    const t=await new Promise(r=>c.toBlob(r,'image/webp',.82));
-    return t&&t.size<f.size?new File([t],f.name.replace(/\.\w+$/,'')+'.webp',{type:'image/webp'}):f;
-  }catch(e){return f}
-}
-
-// Maksimal ukuran video diturunkan jadi 20MB (dari 50MB) agar unggah lebih wajar
-const up=async f=>{
-  if(f.type.startsWith('video/')&&f.size>20*1024*1024)throw new Error('Video maksimal 20 MB (kompres dulu)');
-  f=await shrink(f,1600);
-  const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});
-  if(error)throw error;
-  return sb.storage.from('media').getPublicUrl(n).data.publicUrl;
-};
-
-async function seed(kind){
-  flash('Mengimpor…');
-  if(kind==='p')await ok(sb.from('products').upsert(DEF.map(({id,nw,...d})=>({id:'d'+id,nw:!!nw,...d}))));
-  else{const rows=[];GEN.forEach(([g])=>CATO.forEach(([c])=>dflt(g,c).forEach((a,j)=>rows.push({...a,id:`d-${g}-${c}-${j}`,season:g+':'+c}))));await ok(sb.from('archive').upsert(rows))}
-  await loadAll();flash('Selesai diimpor');
-}
-$('#admin').addEventListener('click',async e=>{
-  const t=e.target.closest('[data-a],[data-tab]');if(!t)return;
-  if(t.dataset.tab){AT=t.dataset.tab;ED=null;CD='';CA='';return renderAdmin()}
-  const a=t.dataset.a,id=t.dataset.id,isP=AT==='produk';
-  try{
-    if(a==='new'){PH=[];ED=isP?{kind:'p',isNew:1,id:'p'+Date.now().toString(36),data:{g:'pria',c:'rtw',s:'tee',p:0}}:{kind:'a',isNew:1,id:'a'+Date.now().toString(36),data:{season:'pria:rtw',s:'tee',p:0}};renderAdmin()}
-    else if(a==='edit'){const src=(isP?ALL:ARC).find(x=>x.id===id);PH=imgList(src);ED={kind:isP?'p':'a',id,data:{...src}};renderAdmin()}
-    else if(a==='cancel'){ED=null;renderAdmin()}
-    else if(a==='del'){if(CD!==id){CD=id;renderAdmin()}else{await ok(sb.from(isP?'products':'archive').delete().eq('id',id));CD='';await loadAll();flash('Dihapus')}}
-    else if(a==='phmain'){const k=+t.dataset.k;PH.unshift(PH.splice(k,1)[0]);renderPG()}
-    else if(a==='phdel'){PH.splice(+t.dataset.k,1);renderPG()}
-    else if(a==='rcfg'){const c={...CFG};delete c[t.dataset.k];await setCfg(c);flash('Dikembalikan ke bawaan')}
-    else if(a==='out'){await sb.auth.signOut();ED=null}
-    else if(a==='delask'){CA=t.dataset.k;CD='';renderAdmin()}
-    else if(a==='delno'){CA='';renderAdmin()}
-    else if(a==='delall'){const k=t.dataset.k;await ok(sb.from(k).delete().not('id','is',null));CA='';await loadAll();flash('Semua data dihapus')}
-    else if(a==='seed')await seed('p');
-    else if(a==='seedA')await seed('a');
-  }catch(err){flash('Gagal: '+(err.message||err.code||err))}
-});
-$('#admin').addEventListener('change',async e=>{
-  const t=e.target;
-  try{
-    if(t.id==='pf'&&t.files.length){
-      const fl=[...t.files].slice(0,10-PH.length);
-      const c=$('#pcount');if(c){c.className='uploading';c.textContent='Mengunggah... (jangan tutup halaman)'}
-      t.disabled=true;
-      try{for(const f of fl)PH.push(await up(f))}
-      catch(err){
-        if(c){c.className='';c.textContent='Gagal: '+(err.message||err.code||err)}
-        t.value='';t.disabled=false;return
-      }
-      t.value='';t.disabled=false;renderPG();
-    }
-    else if(t.dataset.cfg&&t.files[0]){
-      FL='<span class="uploading">Mengunggah... (jangan tutup halaman)</span>';renderAdmin();
-      const u=await up(t.files[0]);await setCfg({...CFG,[t.dataset.cfg]:u});flash('Tersimpan');
-    }
-    else if(t.dataset.st){await ok(sb.from('orders').update({status:t.value}).eq('id',t.dataset.st))}
-  }catch(err){flash('Gagal: '+(err.message||err.code||err))}
-});
-$('#admin').addEventListener('submit',async e=>{
-  e.preventDefault();
-  if(e.target.id==='lg'){const g=new FormData(e.target);const {error}=await sb.auth.signInWithPassword({email:g.get('email'),password:g.get('password')});LERR=error?'Surel atau kata sandi salah.':'';renderAdmin();return}
-  const f=new FormData(e.target),p=ED.kind==='p';
-  const base={n:String(f.get('n')||'').trim(),p:Math.max(0,+f.get('p')||0),s:f.get('s'),img:PH.length>1?JSON.stringify(PH):(PH[0]||'')};
-  const data=p?{...base,g:f.get('g'),c:f.get('c'),nw:!!f.get('nw'),hidden:!!f.get('hidden'),d:String(f.get('d')||'').trim(),z:csv(f.get('z')),x:csv(f.get('x')),stock:f.get('stock')===''||f.get('stock')==null?null:Math.max(0,+f.get('stock')||0)}:{...base,season:f.get('g')+':'+f.get('c')};
-  try{await ok(sb.from(p?'products':'archive').upsert({id:ED.id,...data}));ED=null;await loadAll();flash('Tersimpan')}catch(err){flash('Gagal menyimpan: '+(err.message||err.code||err))}
-});
-const csv=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
-
-/* ===== Supabase ===== */
-function refresh(){
-  cart=cart.filter(c=>PM(c.id));
-  saveCart();
-  if($('#checkout').hidden)drawCart(false);
-  route(true);
-}
-const CF=window.X_CONFIG||{};
-const sb=(window.supabase&&CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY)?supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY):null;
-if(sb){ITEMS=[];ARCHDB=[];LOADED=false}else{CFGOK=true;applyCfg()}
-async function setCfg(c){await ok(sb.from('site').upsert({id:'config',data:c}));await loadAll()}
-async function loadAll(){
-  if(!sb)return;
-  try{
-    const [p,a,c]=await Promise.all([sb.from('products').select('*').order('created_at'),sb.from('archive').select('*').order('created_at'),sb.from('site').select('data').eq('id','config').maybeSingle()]);
-    if(!p.error){ALL=p.data;ITEMS=ALL.filter(x=>!x.hidden)}else ITEMS=DEF
-    if(!a.error){ARC=a.data;ARCHDB=ARC}else ARCHDB=null
-    if(!c.error){CFG=(c.data&&c.data.data)||{};try{localStorage.setItem('x_cfg',JSON.stringify(CFG))}catch(e){}}
-    if(CAN){const o=await sb.from('orders').select('*').order('ts',{ascending:false});if(!o.error)ORDERS=o.data}
-  }catch(e){if(!ITEMS.length)ITEMS=DEF;if(ARCHDB&&!ARCHDB.length)ARCHDB=null}
-  LOADED=true;CFGOK=true;applyCfg();refresh();
-}
-if(sb){
-  sb.auth.getSession().then(({data})=>{CAN=!!data.session;loadAll()});
-  sb.auth.onAuthStateChange((_e,x)=>{const was=CAN;CAN=!!x;if(was!==CAN)loadAll()});
-}
-
-/* ===== cookie ===== */
-(function(){
-  const ck=$('#cookie');if(!ck)return;
-  let ok=false;try{ok=localStorage.getItem('x_cookie')==='1'}catch(e){}
-  if(ok){ck.remove();return}
-  setTimeout(()=>ck.classList.add('on'),1000);
-  $('#cookieOk').onclick=()=>{
-    try{localStorage.setItem('x_cookie','1')}catch(e){}
-    ck.classList.remove('on');
-    setTimeout(()=>ck.remove(),400);
-  };
-})();
-
-route();
-
-});
-</script>
-</body>
-</html>
+  if(step===2)return `${top}${rows}<form id="f2"><h3>Metode pengiriman</h3>${SH.map(([l,c])=>`<label class="opt"><input type="radio" name="ship" value="${c}" ${c===ship?'checked':''}><span>${l}</span><span>${R(c)}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Lanjut
