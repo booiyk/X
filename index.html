@@ -774,7 +774,7 @@ function sumHTML(){
 }
 function leftHTML(){
   const bc=['Informasi','Pengiriman','Pembayaran'].map((l,k)=>step>k+1&&step<4?`<button data-s="${k+1}">${l}</button>`:`<span class="${step===k+1?'cu':''}">${l}</span>`).join('<span>›</span>');
-  const head=`<a class="clogo" href="#/"><span>Héritiers du</span><span>Vide</span></a>`;
+  const head='';
   if(step===4)return `${head}<div class="ok"><h2>Pesanan diterima</h2><p>Nomor pesanan ${esc(orderNo)}. Konfirmasi dikirim ke ${esc(info.email||'surel Anda')}.</p><p style="margin-top:24px"><a class="btn-d" href="#/">Kembali ke toko</a></p></div>`;
   if(!cart.length)return `${head}<p>Keranjang Anda kosong.</p><p style="margin-top:20px"><a class="btn-d" href="#/pria">Lanjut belanja</a></p>`;
   const adr=`${esc(info.address||'')}, ${esc(info.city||'')} ${esc(info.zip||'')}`;
