@@ -24,11 +24,9 @@ button{background:none;border:0;cursor:pointer;padding:0}
 :focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 /* ===== header ===== */
-header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 40px;height:64px;color:#fff;transition:background .3s,color .3s,opacity .2s}
+header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 40px;height:64px;background:#000;color:#fff;transition:background .3s,color .3s,opacity .2s}
 body.lock header{opacity:0;pointer-events:none}
-header:has(.hn-drop:hover){background:var(--bg)}
 body.light header{background:#fff;color:#111}
-body.light header:has(.hn-drop:hover){background:#fff}
 
 .burger{display:none;grid-column:1;justify-self:start;flex-direction:column;justify-content:center;align-items:center;gap:6px;width:30px;height:30px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .burger span{display:block;height:1.5px;width:100%;background:currentColor;transition:transform .3s,width .3s;transform-origin:center}
@@ -43,7 +41,7 @@ body.light header:has(.hn-drop:hover){background:#fff}
 .hn-drop{position:static;cursor:pointer;display:flex;align-items:center;height:100%}
 .hn-drop > span, .hn-drop > a.hn-link{font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;display:block;transition:opacity .2s}
 .hn-drop:hover > span, .hn-drop:hover > a.hn-link{opacity:.5}
-.hn-menu{position:absolute;top:64px;left:0;right:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 20px 32px;opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s .2s;box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.hn-menu{position:absolute;top:64px;left:0;right:0;background:#000;display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 20px 32px;opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s .2s;box-shadow:0 20px 40px rgba(0,0,0,.5)}
 body.light .hn-menu{background:#fff;box-shadow:0 20px 40px rgba(0,0,0,.08)}
 .hn-drop:hover .hn-menu{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
 .hn-menu a{display:block;font-size:clamp(16px,1.8vw,20px);font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.02em;transition:opacity .2s}
@@ -376,9 +374,15 @@ html,body{max-width:100%;overflow-x:hidden}
         <a href="#/pria/perhiasan">Perhiasan</a>
       </div>
     </div>
+    
     <div class="hn-drop">
-      <a href="#/kronologi" class="hn-link">Kronologi</a>
+      <span>Kronologi</span>
+      <div class="hn-menu">
+        <a href="#/kronologi/pria">Pria</a>
+        <a href="#/kronologi/wanita">Wanita</a>
+      </div>
     </div>
+
     <div class="hn-drop">
       <span>Wanita</span>
       <div class="hn-menu">
