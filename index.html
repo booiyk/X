@@ -861,7 +861,10 @@ function route(keep){
       payErr='';
       renderCo();
     }
-    if(page==='admin'&&!(keep&&ED))renderAdmin();
+    if(page==='admin'){
+      if(!(keep&&ED))renderAdmin();
+      if(AT==='pesanan')loadOrders();
+    }
     if(page==='home')initReveal();
     if(!keep)scrollTo(0,0);
   };
@@ -912,9 +915,21 @@ async function saveOrder(){
   if(!cart.some(c=>PM(c.id))){payErr='Keranjang Anda kosong.';return false}
   const items=cart.filter(c=>PM(c.id)).map(c=>{const i=PM(c.id);return{id:String(c.id),n:i.n,z:c.z,q:c.q,p:i.p}});
   const total=subtotal()-disc()+ship;
-  const {error}=await sb.from('orders').insert({no:orderNo,items,total,info,ship,status:'baru',ts:Date.now()});
-  if(error){console.error(error);payErr='Gagal menyimpan pesanan. Periksa koneksi Anda lalu coba lagi.';return false}
-  return true;
+  
+  try {
+    const {data, error}=await sb.from('orders').insert({no:orderNo,items,total,info,ship,status:'baru',ts:Date.now()});
+    if(error){
+      console.error("Gagal insert order:", error);
+      // Tampilkan pesan error asli dari Supabase agar user tahu masalahnya
+      payErr = `Gagal: ${error.message || error.details || 'Pastikan aturan RLS (orders_insert) sudah aktif.'}`;
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("Catch error order:", err);
+    payErr = `Koneksi gagal: ${err.message}`;
+    return false;
+  }
 }
 
 /* ===== admin ===== */
@@ -989,7 +1004,7 @@ async function seed(kind){
 }
 $('#admin').addEventListener('click',async e=>{
   const t=e.target.closest('[data-a],[data-tab]');if(!t)return;
-  if(t.dataset.tab){AT=t.dataset.tab;ED=null;CD='';CA='';return renderAdmin()}
+  if(t.dataset.tab){AT=t.dataset.tab;ED=null;CD='';CA='';if(AT==='pesanan')loadOrders();return renderAdmin()}
   const a=t.dataset.a,id=t.dataset.id,isP=AT==='produk';
   try{
     if(a==='new'){PH=[];ED=isP?{kind:'p',isNew:1,id:'p'+Date.now().toString(36),data:{g:'pria',c:'rtw',s:'tee',p:0}}:{kind:'a',isNew:1,id:'a'+Date.now().toString(36),data:{season:'pria:rtw',s:'tee',p:0}};renderAdmin()}
@@ -1040,7 +1055,6 @@ const csv=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
 
 /* ===== Supabase ===== */
 function refresh(){
-  // JANGAN FILTER CART DISINI, agar tidak terhapus jika items gagal/lambat dimuat
   saveCart();
   if($('#checkout').hidden)drawCart(false);
   route(true);
