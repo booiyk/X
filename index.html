@@ -23,7 +23,6 @@ button,input,select{font:inherit;color:inherit;letter-spacing:inherit;text-trans
 button{background:none;border:0;cursor:pointer;padding:0}
 :focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
-/* ===== HEADER ===== */
 header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 30px;color:#fff;transition:background .3s,color .3s}
 body.light header{background:#fff;color:#111}
 .burger{grid-column:1;justify-self:start;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:24px;height:24px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -40,7 +39,6 @@ body.light header{background:#fff;color:#111}
 .bounce{animation:bnc .5s ease}
 @keyframes bnc{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.94)}100%{transform:scale(1)}}
 
-/* ===== PANEL MENU ===== */
 .navpanel{position:fixed;top:0;left:0;bottom:0;width:min(360px,88vw);background:var(--bg);color:var(--fg);z-index:45;padding:calc(20px + env(safe-area-inset-top,0px)) 22px calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto;transform:translateX(-100%);visibility:hidden;box-shadow:6px 0 40px rgba(0,0,0,.35);transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s .4s}
 .navpanel.on{transform:translateX(0);visibility:visible;transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s}
 .nptop{display:flex;justify-content:space-between;align-items:center;padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:8px}
@@ -62,7 +60,6 @@ body.light header{background:#fff;color:#111}
 .npnav details a:hover{color:var(--fg);padding-left:18px}
 .npnav details a[aria-current="page"]{color:var(--fg);border-left-color:#e07a3c;padding-left:18px}
 
-/* ===== KONTEN ===== */
 .duo{display:grid;grid-template-columns:1fr 1fr;height:100vh;min-height:560px;background:#000}
 .pane{position:relative;isolation:isolate;display:flex;justify-content:space-between;align-items:flex-end;padding:22px;color:#fff;overflow:hidden;background:#000}
 .pane::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#000b 0,#0000 30%),linear-gradient(0deg,#000c 0,#0000 38%),#0003}
@@ -774,7 +771,10 @@ function leftHTML(){
   const bc=['Informasi','Pengiriman','Pembayaran'].map((l,k)=>step>k+1&&step<4?`<button data-s="${k+1}">${l}</button>`:`<span class="${step===k+1?'cu':''}">${l}</span>`).join('<span>›</span>');
   const head=`<a class="clogo" href="#/"><span>Héritiers du</span><span>Vide</span></a>`;
   if(step===4)return `${head}<div class="ok"><h2>Pesanan diterima</h2><p>Nomor pesanan ${esc(orderNo)}. Konfirmasi dikirim ke ${esc(info.email||'surel Anda')}.</p><p style="margin-top:24px"><a class="btn-d" href="#/">Kembali ke toko</a></p></div>`;
+  
+  if(!LOADED) return `${head}<p>Memuat data keranjang...</p>`;
   if(!cart.some(c=>PM(c.id)))return `${head}<p>Keranjang Anda kosong.</p><p style="margin-top:20px"><a class="btn-d" href="#/pria">Lanjut belanja</a></p>`;
+  
   const adr=`${esc(info.address||'')}, ${esc(info.city||'')} ${esc(info.zip||'')}`;
   const top=`${head}<nav class="bc">${bc}</nav>`;
   if(step===1)return `${top}<div class="ex">Checkout cepat</div><div class="exb"><span style="background:#5a31f4">shop</span><span style="background:#ffc439;color:#253b80">PayPal</span><span style="background:#000">Apple Pay</span><span style="background:#000">G Pay</span></div><div class="or">ATAU</div>
@@ -789,7 +789,13 @@ function leftHTML(){
   const noPay=!sb;
   return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3>${noPay?'<p class="flash" role="alert">Sistem pembayaran belum aktif. Hubungi pemilik toko.</p>':''}${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" value="${k}" ${k?'':'checked'}><span>${l}</span></label>`).join('')}<label class="chk pdp"><input type="checkbox" name="pdp" required><span>Saya telah membaca dan menyetujui <a href="#/legal" target="_blank" rel="noopener">Kebijakan Privasi</a> serta pemrosesan data pribadi saya sesuai UU PDP.</span></label><div class="cfoot"><button class="cbtn"${noPay?' disabled':''}>Bayar sekarang</button></div></form>`;
 }
-function renderCo(){$('#checkout').innerHTML=`<div class="cl"><div class="ci" id="cleft">${leftHTML()}</div></div><div class="cr"><div class="ci2" id="cright">${sumHTML()}</div></div>`}
+function renderCo(){
+  if(!LOADED){
+    $('#checkout').innerHTML=`<div class="cl"><div class="ci" id="cleft"><a class="clogo" href="#/"><span>Héritiers du</span><span>Vide</span></a><p>Memuat data...</p></div></div><div class="cr"><div class="ci2" id="cright"></div></div>`;
+    return;
+  }
+  $('#checkout').innerHTML=`<div class="cl"><div class="ci" id="cleft">${leftHTML()}</div></div><div class="cr"><div class="ci2" id="cright">${sumHTML()}</div></div>`;
+}
 $('#checkout').addEventListener('submit',async e=>{
   e.preventDefault();const fd=new FormData(e.target);
   if(e.target.id==='f1'){info=Object.fromEntries(fd);step=2;payErr='';renderCo();scrollTo(0,0);return}
@@ -1032,9 +1038,9 @@ $('#admin').addEventListener('submit',async e=>{
 });
 const csv=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
 
-/* ===== Supabase (Diperbaiki total) ===== */
+/* ===== Supabase ===== */
 function refresh(){
-  cart=cart.filter(c=>PM(c.id));
+  // JANGAN FILTER CART DISINI, agar tidak terhapus jika items gagal/lambat dimuat
   saveCart();
   if($('#checkout').hidden)drawCart(false);
   route(true);
@@ -1045,7 +1051,6 @@ const sb=(window.supabase&&CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY)?supabase.creat
 async function loadAll(){
   if(!sb)return;
   try{
-    // Timeout 8 detik agar tidak stuck selamanya jika internet jelek
     const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000));
     const [p,a,c]=await Promise.race([
       Promise.all([
@@ -1079,7 +1084,7 @@ async function loadOrders(){
 
 if(sb){
   ITEMS=[];ARCHDB=[];LOADED=false;
-  loadAll(); // Produk dimuat LANGSUNG tanpa nunggu status login
+  loadAll(); 
 
   sb.auth.getSession().then(({data})=>{
     const was=CAN;
