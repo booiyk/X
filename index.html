@@ -530,7 +530,7 @@ const arr=v=>{
   return [];
 };
 const SZ=i=>{const z=arr(i.z);return z.length?z:i.s==='shoe'?['39','40','41','42','43','44']:['tee','hood','pants','coat'].includes(i.s)?['XS','S','M','L','XL','2XL']:['Satu ukuran']};
-const sold=(i,k)=>{const zs=SZ(i),xs=arr(i.x);return zs.length>1&&(xs.length?xs.includes(zs[k]):(hs(i.id)+k)%3===0)};
+const sold=(i,k)=>{const zs=SZ(i),xs=arr(i.x);return xs.length?xs.includes(zs[k]):zs.length>1&&(hs(i.id)+k)%3===0};
 const card=i=>`<a class="pcard" href="#/p/${i.id}"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small></a>`;
 const AN={coat:['Jaket Kulit Klasik','Mantel Wol Lama'],tee:['Kaos Grafis Lama','Kaos Lengan Panjang'],hood:['Hoodie Zip Lama','Hoodie Bordir'],pants:['Celana Denim Robek','Celana Lipit Wol'],shoe:['Bot Kerja Kulit','Sepatu Loafer'],bag:['Tas Pos Kulit','Tas Punggung Kanvas'],acc:['Topi Bulu Pemburu','Ikat Pinggang Paku'],gem:['Kalung Elang Perak','Anting Salib Perak']};
 const CSH={rtw:['coat','tee','hood','pants'],sepatu:['shoe'],tas:['bag'],aksesoris:['acc'],perhiasan:['gem']};
@@ -735,21 +735,22 @@ function leftHTML(){
   const adr=`${esc(info.address||'')}, ${esc(info.city||'')} ${esc(info.zip||'')}`;
   const top=`${head}<nav class="bc">${bc}</nav>`;
   if(step===1)return `${top}<div class="ex">Checkout cepat</div><div class="exb"><span style="background:#5a31f4">shop</span><span style="background:#ffc439;color:#253b80">PayPal</span><span style="background:#000">Apple Pay</span><span style="background:#000">G Pay</span></div><div class="or">ATAU</div>
-  <form id="f1"><h3>Kontak</h3><input type="email" name="email" placeholder="Surel" required value="${esc(info.email||'')}"><label class="chk"><input type="checkbox" name="news"> Kirimi saya berita dan penawaran</label>
-  <h3>Alamat pengiriman</h3><select name="country" aria-label="Negara"><option>Indonesia</option><option>Singapura</option><option>Malaysia</option></select>
+  <form id="f1"><h3>Kontak</h3><input type="email" name="email" placeholder="Surel" required value="${esc(info.email||'')}"><label class="chk"><input type="checkbox" name="news"${info.news?' checked':''}> Kirimi saya berita dan penawaran</label>
+  <h3>Alamat pengiriman</h3><select name="country" aria-label="Negara"><option${!info.country||info.country==='Indonesia'?' selected':''}>Indonesia</option><option${info.country==='Singapura'?' selected':''}>Singapura</option><option${info.country==='Malaysia'?' selected':''}>Malaysia</option></select>
   <div class="row"><input name="fn" placeholder="Nama depan (opsional)" value="${esc(info.fn||'')}"><input name="ln" placeholder="Nama belakang" required value="${esc(info.ln||'')}"></div>
   <input name="address" placeholder="Alamat" required value="${esc(info.address||'')}"><input name="apt" placeholder="Apartemen, unit, dll. (opsional)" value="${esc(info.apt||'')}">
   <div class="row"><input name="city" placeholder="Kota" required value="${esc(info.city||'')}"><select name="prov" aria-label="Provinsi">${PROV.map(p=>`<option${p===info.prov?' selected':''}>${p}</option>`).join('')}</select><input name="zip" placeholder="Kode pos" required value="${esc(info.zip||'')}"></div>
   <input name="phone" type="tel" placeholder="Telepon" value="${esc(info.phone||'')}"><div class="cfoot"><button class="cbtn">Lanjut ke pengiriman</button></div></form>`;
   const rows=`<div class="box"><div><span>Kontak</span><span>${esc(info.email||'')}</span></div><div><span>Kirim ke</span><span>${adr}</span></div></div>`;
   if(step===2)return `${top}${rows}<form id="f2"><h3>Metode pengiriman</h3>${SH.map(([l,c])=>`<label class="opt"><input type="radio" name="ship" value="${c}" ${c===ship?'checked':''}><span>${l}</span><span>${R(c)}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Lanjut ke pembayaran</button></div></form>`;
-  return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3>${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" ${k?'':'checked'}><span>${l}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Bayar sekarang</button></div></form>`;
+  return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3>${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" value="${esc(l)}" ${k?'':'checked'}><span>${l}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Bayar sekarang</button></div></form>`;
 }
 function renderCo(){$('#checkout').innerHTML=`<div class="cl"><div class="ci" id="cleft">${leftHTML()}</div></div><div class="cr"><div class="ci2" id="cright">${sumHTML()}</div></div>`}
 $('#checkout').addEventListener('submit',async e=>{
   e.preventDefault();const fd=new FormData(e.target);
   if(e.target.id==='f1'){info=Object.fromEntries(fd);step=2;payErr='';renderCo();scrollTo(0,0);return}
   if(e.target.id==='f2'){ship=+fd.get('ship');step=3;payErr='';renderCo();scrollTo(0,0);return}
+  if(e.target.id==='f3'){info.pay=fd.get('pay')}
   const btn=e.target.querySelector('.cbtn');
   if(btn){btn.disabled=true;btn.textContent='Memproses…'}
   orderNo='X-'+Math.floor(100000+Math.random()*900000);
