@@ -31,7 +31,7 @@ Pembayaran belum ada (checkout masih simulasi).
 ## 4. Memakai dashboard
 Buka `alamat-situs/admin` (tidak ada tautannya di toko, hanya Anda yang tahu), lalu masuk dengan akun tadi.
 - **Produk**: klik *Impor produk contoh* sekali untuk mengisi contoh, lalu ubah atau hapus. Foto diunggah langsung dari komputer atau ponsel.
-- **Kronologi**: kelola barang arsip per musim.
+- **Kronologi**: kelola barang arsip untuk Pria dan Wanita. Pilih Untuk, Kategori (Siap Pakai, Sepatu, Tas, Aksesoris, Perhiasan), dan foto. Tiap kategori menjadi satu carousel di halaman Kronologi.
 - **Tampilan**: ganti foto hero Pria dan Wanita serta video layar penuh. Ada dua kolom video: satu untuk laptop (lebar) dan satu khusus HP (potret 9:16).
 - **Pesanan**: lihat pesanan masuk dan ubah statusnya.
 
