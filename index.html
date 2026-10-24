@@ -17,12 +17,13 @@ body.light{--bg:#fff;--fg:#111;--mute:#6f6f6f;--line:#e5e5e5}
 *{box-sizing:border-box;margin:0}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font:600 15px/1.4 "Barlow Condensed","Arial Narrow",Arial,sans-serif;letter-spacing:.01em;text-transform:uppercase;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
 a{color:inherit;text-decoration:none}
 button,input,select{font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit}
 button{background:none;border:0;cursor:pointer;padding:0}
 :focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
-/* ===== header: burger kiri, logo tengah, cart kanan ===== */
+/* ===== header ===== */
 header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 22px;color:#fff;transition:background .3s,color .3s}
 body.light header{background:#fff;color:#111}
 .burger{grid-column:1;justify-self:start;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;width:30px;height:30px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -33,15 +34,22 @@ body.light header{background:#fff;color:#111}
 .logo{grid-column:2;justify-self:center;text-align:center;font:500 20px/.95 "Times New Roman",Times,serif;letter-spacing:.01em;text-transform:none;white-space:nowrap}
 .logo span{display:block}
 .hright{grid-column:3;justify-self:end;font-size:15px}
+.bounce{animation:bnc .5s ease}
+@keyframes bnc{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.94)}100%{transform:scale(1)}}
 
-/* ===== panel menu geser ===== */
+/* ===== panel menu ===== */
 .navpanel{position:fixed;top:0;left:0;bottom:0;width:min(360px,88vw);background:var(--bg);color:var(--fg);z-index:45;padding:calc(20px + env(safe-area-inset-top,0px)) 22px calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto;transform:translateX(-100%);visibility:hidden;box-shadow:6px 0 40px rgba(0,0,0,.35);transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s .4s}
 .navpanel.on{transform:translateX(0);visibility:visible;transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s}
 .nptop{display:flex;justify-content:space-between;align-items:center;padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:8px}
 .nptop .nptitle{font-size:20px;letter-spacing:.04em;text-transform:uppercase}
-.nptop button{font-size:15px;color:var(--mute);transition:color .2s}
-.nptop button:hover{color:var(--fg)}
-.npnav details{border-bottom:1px solid var(--line)}
+.npclose{display:grid;place-items:center;width:34px;height:34px;color:var(--mute);transition:color .2s,transform .2s}
+.npclose:hover{color:var(--fg);transform:rotate(90deg)}
+.npclose svg{display:block}
+.npnav details{border-bottom:1px solid var(--line);opacity:0;transform:translateX(-12px);transition:opacity .35s,transform .35s}
+.navpanel.on .npnav details{opacity:1;transform:none}
+.navpanel.on .npnav details:nth-child(1){transition-delay:.05s}
+.navpanel.on .npnav details:nth-child(2){transition-delay:.11s}
+.navpanel.on .npnav details:nth-child(3){transition-delay:.17s}
 .npnav summary{cursor:pointer;list-style:none;padding:20px 0;font-size:clamp(24px,4vw,32px);font-weight:600;line-height:1.05;display:flex;align-items:center;justify-content:space-between;transition:color .2s}
 .npnav summary::-webkit-details-marker{display:none}
 .npnav summary::marker{content:''}
@@ -49,6 +57,7 @@ body.light header{background:#fff;color:#111}
 .npnav details[open] summary::after{transform:rotate(45deg)}
 .npnav details a{display:block;padding:12px 0 12px 14px;font-size:17px;color:var(--mute);border-left:1px solid var(--line);margin:0 0 6px 2px;transition:color .2s,padding-left .2s}
 .npnav details a:hover{color:var(--fg);padding-left:18px}
+.npnav details a[aria-current="page"]{color:var(--fg);border-left-color:#e07a3c;padding-left:18px}
 
 /* ===== konten ===== */
 .duo{display:grid;grid-template-columns:1fr 1fr;height:100vh;min-height:560px;background:#000}
@@ -79,8 +88,9 @@ body.light header{background:#fff;color:#111}
 #shop,#pdp,#kr,#admin,#legal{padding:110px 22px 80px;min-height:100vh}
 .title{display:flex;justify-content:space-between;align-items:center;margin-bottom:48px;gap:16px}
 .title h1{font-size:clamp(28px,3.6vw,46px);line-height:1;font-weight:600}
-.btn-d{display:inline-block;background:#111;color:#fff;padding:14px 18px;font-size:20px;text-align:center}
+.btn-d{display:inline-block;background:#111;color:#fff;padding:14px 18px;font-size:20px;text-align:center;transition:opacity .2s,transform .15s}
 .btn-d:disabled{opacity:.45;cursor:not-allowed}
+.btn-d.added{background:#1f6f3a}
 .filters{display:flex;gap:24px;justify-content:flex-end;margin:-24px 0 32px;font-size:17px}
 .filters button{color:var(--mute)}
 .filters button[aria-pressed="true"]{color:var(--fg);border-bottom:1px solid var(--fg)}
@@ -109,7 +119,6 @@ body.light header{background:#fff;color:#111}
 .relcar::-webkit-scrollbar{display:none}
 .relcard{flex:0 0 clamp(150px,20vw,240px);scroll-snap-align:start}
 .relcard .pimg{aspect-ratio:1/1.05;margin-bottom:14px}
-.relnote{color:var(--mute);font-size:15px;margin-top:6px}
 .car{overflow:hidden;margin:0 -22px}
 .track{display:flex;width:max-content;animation:rt var(--d,40s) linear infinite}
 .car:hover .track{animation-play-state:paused}
@@ -122,6 +131,28 @@ body.light header{background:#fff;color:#111}
 footer{padding:20px 22px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid var(--line);color:var(--mute)}
 body.light footer{color:var(--fg)}
 
+/* ===== transisi halaman ===== */
+main.page{animation:pgIn .3s ease both}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+main.page.out{animation:pgOut .2s ease both}
+@keyframes pgOut{to{opacity:0;transform:translateY(-4px)}}
+
+/* ===== reveal on scroll ===== */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+/* ===== skeleton ===== */
+.sk{animation:sk 1.2s ease-in-out infinite}
+.sk-img{aspect-ratio:1/1.05;background:#e8e5e0;margin-bottom:18px}
+.sk-line{height:16px;background:#e8e5e0;margin:8px auto 0;border-radius:3px}
+.sk-line.s{width:55%}
+@keyframes sk{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* ===== back to top ===== */
+#btt{position:fixed;right:18px;bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:30;width:44px;height:44px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .3s,transform .3s}
+#btt.on{opacity:1;transform:none;pointer-events:auto}
+body.light #btt{background:#111;color:#fff}
+
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s;z-index:44}
 .scrim.on{opacity:1;pointer-events:auto}
 
@@ -129,7 +160,11 @@ body.light footer{color:var(--fg)}
 .drawer.on{transform:none}
 .dtop{display:flex;justify-content:space-between;font-size:22px;margin-bottom:20px}
 .ditems{flex:1;overflow:auto}
-.ditem{display:grid;grid-template-columns:72px 1fr auto;gap:14px;padding:16px 0;border-top:1px solid #e5e5e5;align-items:start}
+.ditem{display:grid;grid-template-columns:72px 1fr auto;gap:14px;padding:16px 0;border-top:1px solid #e5e5e5;align-items:start;animation:diIn .35s ease both}
+.ditem:nth-child(2){animation-delay:.04s}
+.ditem:nth-child(3){animation-delay:.08s}
+.ditem:nth-child(4){animation-delay:.12s}
+@keyframes diIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
 .th{background:#f5f5f5;aspect-ratio:1;display:grid;place-items:center}
 .th svg{width:70%}
 .ditem small{display:block;font:400 13px Arial,sans-serif;letter-spacing:0;color:#6f6f6f}
@@ -241,7 +276,7 @@ body.light footer{color:var(--fg)}
 .legal .upd{color:var(--mute);font-size:13px;margin-bottom:28px}
 .legal strong{font-weight:700}
 
-/* ===== banner cookie ===== */
+/* ===== cookie ===== */
 .cookie{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:43;background:#fff;color:#111;border-radius:8px;padding:14px 16px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;font:400 13px/1.5 Arial,sans-serif;text-transform:none;letter-spacing:0;box-shadow:0 8px 30px rgba(0,0,0,.18);max-width:680px;margin:0 auto;transform:translateY(20px);opacity:0;pointer-events:none;transition:transform .35s,opacity .35s}
 .cookie.on{transform:none;opacity:1;pointer-events:auto}
 .cookie p{margin:0;flex:1;min-width:200px}
@@ -285,10 +320,18 @@ body.light footer{color:var(--fg)}
   #kr .ar{flex-basis:44vw;margin-right:14px}.krh{margin:30px 0 10px;font-size:22px}.krt{margin:-8px 0 0}
   .gal img,.gal video{max-height:52vh}.thumbs img{max-height:none}
   .cookie{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:12px 14px;font-size:12.5px}
+  #btt{right:12px;bottom:calc(78px + env(safe-area-inset-bottom,0px));width:40px;height:40px}
 }
 @media (max-width:480px){.exb{gap:8px}.exb span{font-size:13px;padding:0 4px;text-align:center;line-height:1.1;white-space:nowrap}.logo{font-size:15px}}
 @media (max-width:380px){.hright{font-size:14px}}
-@media (prefers-reduced-motion:reduce){*,.film::before,.film::after{animation:none!important;transition:none!important}.car{overflow-x:auto}.navpanel{transition:none!important}.cookie{transition:none!important}}
+@media (prefers-reduced-motion:reduce){
+  *,.film::before,.film::after{animation:none!important;transition:none!important}
+  .car{overflow-x:auto}.navpanel{transition:none!important}.cookie{transition:none!important}
+  .rv{opacity:1;transform:none}
+  main.page{animation:none!important}
+  .npnav details{opacity:1;transform:none}
+  .sk{animation:none!important}
+}
 html,body{max-width:100%;overflow-x:hidden}
 </style>
 </head>
@@ -305,42 +348,44 @@ html,body{max-width:100%;overflow-x:hidden}
 <aside class="navpanel" id="navpanel" aria-hidden="true" aria-label="Menu utama">
   <div class="nptop">
     <span class="nptitle">Menu</span>
-    <button id="npclose" aria-label="Tutup menu">Tutup</button>
+    <button class="npclose" id="npclose" aria-label="Tutup menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
   </div>
   <nav class="npnav">
     <details>
       <summary>Pria</summary>
-      <a href="#/pria/baru">Koleksi Baru</a>
-      <a href="#/pria/rtw">Siap Pakai</a>
-      <a href="#/pria/sepatu">Sepatu</a>
-      <a href="#/pria/tas">Tas</a>
-      <a href="#/pria/aksesoris">Aksesoris</a>
-      <a href="#/pria/perhiasan">Perhiasan</a>
+      <a href="#/pria/baru" data-k="pria">Koleksi Baru</a>
+      <a href="#/pria/rtw" data-k="pria">Siap Pakai</a>
+      <a href="#/pria/sepatu" data-k="pria">Sepatu</a>
+      <a href="#/pria/tas" data-k="pria">Tas</a>
+      <a href="#/pria/aksesoris" data-k="pria">Aksesoris</a>
+      <a href="#/pria/perhiasan" data-k="pria">Perhiasan</a>
     </details>
     <details>
       <summary>Kronologi</summary>
-      <a href="#/kronologi/pria">Pria</a>
-      <a href="#/kronologi/wanita">Wanita</a>
+      <a href="#/kronologi/pria" data-k="kronologi">Pria</a>
+      <a href="#/kronologi/wanita" data-k="kronologi">Wanita</a>
     </details>
     <details>
       <summary>Wanita</summary>
-      <a href="#/wanita/baru">Koleksi Baru</a>
-      <a href="#/wanita/rtw">Siap Pakai</a>
-      <a href="#/wanita/sepatu">Sepatu</a>
-      <a href="#/wanita/tas">Tas</a>
-      <a href="#/wanita/aksesoris">Aksesoris</a>
-      <a href="#/wanita/perhiasan">Perhiasan</a>
+      <a href="#/wanita/baru" data-k="wanita">Koleksi Baru</a>
+      <a href="#/wanita/rtw" data-k="wanita">Siap Pakai</a>
+      <a href="#/wanita/sepatu" data-k="wanita">Sepatu</a>
+      <a href="#/wanita/tas" data-k="wanita">Tas</a>
+      <a href="#/wanita/aksesoris" data-k="wanita">Aksesoris</a>
+      <a href="#/wanita/perhiasan" data-k="wanita">Perhiasan</a>
     </details>
   </nav>
 </aside>
 
-<main id="home">
+<main id="home" class="page">
   <div class="duo">
     <a class="pane" href="#/pria"><img id="hM" fetchpriority="high" decoding="async" class="ph" style="--o:70% 30%" alt=""><span>Pria</span><i>→</i></a>
     <a class="pane" href="#/wanita"><img id="hW" fetchpriority="high" decoding="async" class="ph" style="--o:40% 40%" alt=""><span>Wanita</span><i>→</i></a>
   </div>
-  <section class="quote" aria-label="Moto"><p>We will attend to every crying baby</p></section>
-  <section class="vidsec" aria-label="Video koleksi">
+  <section class="quote rv" aria-label="Moto"><p>We will attend to every crying baby</p></section>
+  <section class="vidsec rv" aria-label="Video koleksi">
     <div class="film" id="film"></div>
     <div class="vidfoot">
       <a href="#/kronologi">Kronologi →</a>
@@ -351,13 +396,13 @@ html,body{max-width:100%;overflow-x:hidden}
     </div>
   </section>
 </main>
-<main id="shop" hidden></main>
-<main id="pdp" hidden></main>
-<main id="kr" hidden></main>
-<main id="admin" hidden></main>
+<main id="shop" class="page" hidden></main>
+<main id="pdp" class="page" hidden></main>
+<main id="kr" class="page" hidden></main>
+<main id="admin" class="page" hidden></main>
 <section id="checkout" hidden></section>
 
-<main id="legal" hidden>
+<main id="legal" class="page" hidden>
   <div class="legal">
     <h1>Informasi Legal</h1>
     <p class="upd">Terakhir diperbarui: 1 Januari 2026</p>
@@ -410,6 +455,10 @@ html,body{max-width:100%;overflow-x:hidden}
 
 <footer><span>Héritiers du Vide © 2026</span><a href="#/legal">Legal</a></footer>
 
+<button id="btt" aria-label="Kembali ke atas">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-label="Keranjang" aria-hidden="true">
   <div class="dtop"><span>Keranjang</span><button id="dclose">Tutup</button></div>
@@ -428,6 +477,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 const VIDEO_SRC="media/video.mp4";
 const $=s=>document.querySelector(s),R=n=>'Rp '+n.toLocaleString('id-ID');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RM=matchMedia('(prefers-reduced-motion: reduce)');
 const CATS=[['baru','Koleksi Baru'],['rtw','Siap Pakai'],['sepatu','Sepatu'],['tas','Tas'],['aksesoris','Aksesoris'],['perhiasan','Perhiasan']];
 const GEN=[['pria','Pria'],['wanita','Wanita']],CATO=CATS.slice(1);
 const V=(d,c='')=>`<svg class="sv ${c}" viewBox="0 0 100 100">${d}</svg>`;
@@ -507,6 +557,43 @@ const dflt=(g,c)=>CSH[c].flatMap((s,j)=>AN[s].map((n,m)=>({n,s,p:350000+((j*5+m*
 const catOf=t=>Object.keys(CSH).find(c=>CSH[c].includes(t))||'rtw';
 const archItems=(g,c)=>ARCHDB?ARCHDB.filter(a=>a.season===g+':'+c||(!String(a.season).includes(':')&&catOf(a.s)===c)):dflt(g,c);
 
+/* ===== reveal on scroll ===== */
+let rvObs=null;
+function initReveal(){
+  if(RM.matches){document.querySelectorAll('.rv').forEach(e=>e.classList.add('in'));return}
+  if(!('IntersectionObserver' in window)){document.querySelectorAll('.rv').forEach(e=>e.classList.add('in'));return}
+  if(!rvObs){
+    rvObs=new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target)}})},{threshold:.12});
+  }
+  document.querySelectorAll('.rv:not(.in)').forEach(e=>rvObs.observe(e));
+}
+
+/* ===== scroll lock ===== */
+function lockScroll(on){
+  document.body.classList.toggle('lock',on);
+}
+
+/* ===== focus trap ===== */
+let trapEl=null,trapPrev=null;
+function trapOn(el){
+  trapEl=el;trapPrev=document.activeElement;
+  const f=el.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])');
+  if(f.length)f[0].focus();
+}
+function trapOff(){
+  trapEl=null;
+  if(trapPrev&&document.contains(trapPrev))try{trapPrev.focus()}catch(e){}
+  trapPrev=null;
+}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Tab'||!trapEl)return;
+  const f=[...trapEl.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(x=>x.offsetParent!==null);
+  if(!f.length)return;
+  const first=f[0],last=f[f.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
+
 /* ===== panel menu ===== */
 const burger=$('#burger'),navpanel=$('#navpanel'),scrim=$('#scrim');
 function openNav(){
@@ -516,13 +603,17 @@ function openNav(){
   scrim.classList.add('on');
   burger.setAttribute('aria-expanded','true');
   burger.setAttribute('aria-label','Tutup menu');
+  lockScroll(true);
+  trapOn(navpanel);
 }
 function closeNav(){
+  if(!navpanel.classList.contains('on'))return;
   navpanel.classList.remove('on');
   navpanel.setAttribute('aria-hidden','true');
   burger.setAttribute('aria-expanded','false');
   burger.setAttribute('aria-label','Buka menu');
-  if(!$('#drawer').classList.contains('on'))scrim.classList.remove('on');
+  if(trapEl===navpanel)trapOff();
+  if(!$('#drawer').classList.contains('on')){scrim.classList.remove('on');lockScroll(false)}
 }
 burger.addEventListener('click',e=>{
   e.stopPropagation();
@@ -543,16 +634,25 @@ document.addEventListener('click',e=>{
 
 /* ===== cart ===== */
 let cart=[];
+function bounceCart(){
+  const b=$('#cartBtn');if(!b||RM.matches)return;
+  b.classList.remove('bounce');void b.offsetWidth;b.classList.add('bounce');
+  setTimeout(()=>b.classList.remove('bounce'),520);
+}
 function openCart(){
   closeNav();
   $('#drawer').classList.add('on');
   $('#drawer').setAttribute('aria-hidden','false');
   scrim.classList.add('on');
+  lockScroll(true);
+  trapOn($('#drawer'));
 }
 function closeCart(){
+  if(!$('#drawer').classList.contains('on'))return;
   $('#drawer').classList.remove('on');
   $('#drawer').setAttribute('aria-hidden','true');
-  if(!navpanel.classList.contains('on'))scrim.classList.remove('on');
+  if(trapEl===$('#drawer'))trapOff();
+  if(!navpanel.classList.contains('on')){scrim.classList.remove('on');lockScroll(false)}
 }
 scrim.onclick=()=>{closeNav();closeCart()};
 $('#cartBtn').onclick=openCart;
@@ -560,18 +660,26 @@ $('#dclose').onclick=closeCart;
 $('#dgo').onclick=closeCart;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNav();closeCart()}});
 const subtotal=()=>cart.reduce((a,c)=>a+c.q*PM(c.id).p,0);
-function drawCart(){
+let lastCount=0;
+function drawCart(bounce){
   const n=cart.reduce((a,c)=>a+c.q,0);
   $('#cn').textContent=n;$('#dsum').textContent=R(subtotal());$('#dgo').hidden=!n;
+  if(bounce&&n>lastCount)bounceCart();
+  lastCount=n;
   $('#ditems').innerHTML=n?cart.map((c,k)=>{const i=PM(c.id);return `<div class="ditem"><div class="th">${pic(i)}</div><div><b>${esc(i.n)}</b><small>${c.z}</small><div class="qty"><button data-k="${k}" data-d="-1" aria-label="Kurangi">−</button>${c.q}<button data-k="${k}" data-d="1" aria-label="Tambah">+</button></div></div><span>${R(i.p*c.q)}</span></div>`}).join(''):'<p class="emp">Keranjang Anda kosong.</p>';
   if(!$('#checkout').hidden)renderCo();
 }
-$('#ditems').onclick=e=>{const b=e.target.closest('button');if(!b)return;const c=cart[b.dataset.k];c.q+=+b.dataset.d;if(c.q<1)cart.splice(b.dataset.k,1);drawCart()};
+$('#ditems').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const c=cart[b.dataset.k];c.q+=+b.dataset.d;if(c.q<1)cart.splice(b.dataset.k,1);
+  drawCart(false);
+};
 
 /* ===== daftar produk ===== */
 let curG='pria',curC='baru',sortBy='new',fopen=false;
+function skHTML(){return `<div class="grid3 sk">${Array.from({length:6}).map(()=>`<div class="pcard"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line s"></div></div>`).join('')}</div>`}
 function renderShop(){
-  if(!LOADED){$('#shop').innerHTML='<p class="note">Memuat…</p>';return}
+  if(!LOADED){$('#shop').innerHTML=`<div class="title"><h1>Memuat…</h1></div>${skHTML()}`;return}
   let L=ITEMS.filter(i=>i.g===curG&&(curC==='baru'?i.nw:i.c===curC));
   if(sortBy==='lo')L=[...L].sort((a,b)=>a.p-b.p);if(sortBy==='hi')L=[...L].sort((a,b)=>b.p-a.p);
   const opt=[['new','Terbaru'],['lo','Harga terendah'],['hi','Harga tertinggi']];
@@ -591,15 +699,23 @@ function renderPdp(i){
   const rel=ITEMS.filter(x=>x.g===i.g&&x.id!==i.id).sort((a,b)=>{const n=ITEMS.length,x=ITEMS.indexOf(i);return((ITEMS.indexOf(a)-x+n)%n)-((ITEMS.indexOf(b)-x+n)%n)}).slice(0,8);
   $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s])}</p></div><div class="m">${galHTML(i)}</div>
   <div class="r"><div class="sz" id="sz">${zs.map((z,k)=>`<button ${sold(i,k)?'disabled':''} aria-pressed="${z===selZ}">${z}</button>`).join('')}</div><button class="btn-d" id="add"${selZ?'':' disabled'}>${selZ?`Tambah ke keranjang — ${R(i.p)}`:'Habis'}</button></div></div>
-  <h2 class="rh">Terkait</h2>${rel.length?`<div class="relcar" aria-label="Produk terkait">${rel.map(x=>`<a class="pcard relcard" href="#/p/${x.id}"><div class="pimg">${pic(x)}</div><b>${esc(x.n)}</b><small>${R(x.p)}</small></a>`).join('')}</div><p class="relnote">Geser ke kiri atau kanan untuk melihat lainnya.</p>`:'<p class="note">Belum ada produk terkait.</p>'}`;
+  <h2 class="rh rv">Terkait</h2>${rel.length?`<div class="relcar" aria-label="Produk terkait">${rel.map(x=>`<a class="pcard relcard" href="#/p/${x.id}"><div class="pimg">${pic(x)}</div><b>${esc(x.n)}</b><small>${R(x.p)}</small></a>`).join('')}</div>`:'<p class="note">Belum ada produk terkait.</p>'}`;
+  initReveal();
 }
 $('#pdp').addEventListener('scroll',e=>{const g=e.target;if(g.id!=='gal')return;const k=Math.round(g.scrollLeft/g.clientWidth);document.querySelectorAll('#thumbs button').forEach((b,j)=>b.setAttribute('aria-current',String(j===k)))},true);
 $('#pdp').onclick=e=>{
   const th=e.target.closest('[data-th]');if(th){const g=$('#gal');if(g)g.scrollTo({left:+th.dataset.th*g.clientWidth,behavior:'smooth'})}
   const z=e.target.closest('#sz button');
   if(z&&!z.disabled){selZ=z.textContent;document.querySelectorAll('#sz button').forEach(b=>b.setAttribute('aria-pressed',b===z))}
-  if(e.target.closest('#add')&&selZ){
-    const f=cart.find(c=>c.id===pI.id&&c.z===selZ);f?f.q++:cart.push({id:pI.id,z:selZ,q:1});drawCart();openCart();
+  const addBtn=e.target.closest('#add');
+  if(addBtn&&selZ){
+    const f=cart.find(c=>c.id===pI.id&&c.z===selZ);
+    f?f.q++:cart.push({id:pI.id,z:selZ,q:1});
+    drawCart(true);
+    addBtn.classList.add('added');
+    const txt=addBtn.textContent;
+    addBtn.textContent='Ditambahkan ✓';
+    setTimeout(()=>{addBtn.classList.remove('added');addBtn.textContent=txt},1500);
   }
 };
 
@@ -612,7 +728,7 @@ function renderKr(g){
   if(!rows.length){$('#kr').innerHTML=head+'<p class="note">Belum ada barang di arsip.</p>';return}
   const tile=i=>`<div class="ar"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small><em>Habis terjual</em></div>`;
   const row=({l,L})=>{let b=L;while(b.length<6)b=b.concat(L);const t=b.map(tile).join('');return `<h2 class="krh">${l}</h2><div class="car" aria-label="Arsip ${l}"><div class="track" style="--d:${b.length*4}s">${t}${t}</div></div>`};
-  $('#kr').innerHTML=head+rows.map(row).join('')+'<p class="note">Arsip barang yang sudah terjual habis. Arahkan kursor untuk menghentikan gerakan.</p>';
+  $('#kr').innerHTML=head+rows.map(row).join('');
 }
 
 /* ===== checkout ===== */
@@ -663,7 +779,7 @@ $('#checkout').addEventListener('submit',async e=>{
     renderCo();scrollTo(0,0);return;
   }
   payErr='';step=4;cart=[];code='';dmsg='';
-  drawCart();renderCo();scrollTo(0,0);
+  drawCart(false);renderCo();scrollTo(0,0);
 });
 $('#checkout').addEventListener('change',e=>{
   if(e.target.name==='ship'){
@@ -676,28 +792,77 @@ $('#checkout').addEventListener('click',e=>{
   if(e.target.id==='da'){code=$('#dc').value.trim().toUpperCase();dmsg=code?(code==='X10'?'Diskon 10% diterapkan.':'Kode tidak valid.'):'';$('#cright').innerHTML=sumHTML()}
 });
 
-/* ===== router ===== */
+/* ===== indikator halaman aktif di panel ===== */
+function syncNav(active){
+  navpanel.querySelectorAll('.npnav a').forEach(a=>{
+    const href=a.getAttribute('href').replace(/^#\//,'');
+    const on=active&&href.startsWith(active);
+    if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+  });
+}
+
+/* ===== router + transisi ===== */
+let routeToken=0;
 function route(keep){
   const p=location.hash.replace(/^#\/?/,'').split('/'),k=p[0];
   const IT=k==='p'?PM(p[1]):null;
   const gd=(k==='pria'||k==='wanita')?k:(IT?IT.g:null);
   const page=IT?'pdp':gd?'shop':k==='kronologi'?'kr':k==='checkout'?'checkout':k==='admin'?'admin':k==='legal'?'legal':'home';
-  ['home','shop','pdp','kr','checkout','admin','legal'].forEach(x=>$('#'+x).hidden=x!==page);
-  document.body.classList.toggle('light',page!=='home');
-  document.body.classList.toggle('co',page==='checkout');
+  const ids=['home','shop','pdp','kr','checkout','admin','legal'];
+
   if(!keep){closeNav();closeCart()}
-  if(page==='shop'){curG=gd;curC=CATS.some(x=>x[0]===p[1])?p[1]:'baru';fopen=keep?fopen:false;renderShop()}
-  if(page==='pdp')renderPdp(IT);
-  if(page==='kr')renderKr(p[1]);
-  if(page==='checkout'&&!keep){
-    if(step===4){step=1;code='';dmsg='';orderNo=''}
-    payErr='';
-    renderCo();
-  }
-  if(page==='admin'&&!(keep&&ED))renderAdmin();
-  if(!keep)scrollTo(0,0);
+
+  const activeKey=gd||(k==='kronologi'?'kronologi':'');
+  syncNav(activeKey);
+
+  const doRender=()=>{
+    ids.forEach(x=>$('#'+x).hidden=x!==page);
+    document.body.classList.toggle('light',page!=='home');
+    document.body.classList.toggle('co',page==='checkout');
+    const el=$('#'+page);
+    el.classList.remove('out');
+    if(page==='shop'){curG=gd;curC=CATS.some(x=>x[0]===p[1])?p[1]:'baru';fopen=keep?fopen:false;renderShop()}
+    if(page==='pdp')renderPdp(IT);
+    if(page==='kr')renderKr(p[1]);
+    if(page==='checkout'&&!keep){
+      if(step===4){step=1;code='';dmsg='';orderNo=''}
+      payErr='';
+      renderCo();
+    }
+    if(page==='admin'&&!(keep&&ED))renderAdmin();
+    if(page==='home')initReveal();
+    if(!keep)scrollTo(0,0);
+  };
+
+  if(keep||RM.matches){doRender();return}
+
+  const token=++routeToken;
+  const vis=ids.map(x=>$('#'+x)).filter(el=>!el.hidden);
+  if(!vis.length){doRender();return}
+  vis.forEach(el=>el.classList.add('out'));
+  setTimeout(()=>{
+    if(token!==routeToken)return;
+    doRender();
+  },180);
 }
-addEventListener('hashchange',()=>route());drawCart();
+addEventListener('hashchange',()=>route());drawCart(false);
+initReveal();
+
+/* ===== back to top ===== */
+const btt=$('#btt');
+let bttT=0;
+addEventListener('scroll',()=>{
+  clearTimeout(bttT);
+  bttT=setTimeout(()=>{
+    const y=scrollY;
+    const hide=!$('#checkout').hidden;
+    btt.classList.toggle('on',!hide&&y>600);
+  },80);
+},{passive:true});
+btt.onclick=()=>{
+  if(RM.matches)scrollTo(0,0);
+  else scrollTo({top:0,behavior:'smooth'});
+};
 
 /* ===== video & tampilan ===== */
 const D0M='media/hero-pria.jpg',D0W='media/hero-wanita.jpg';let curV=null,CFGOK=false;
@@ -847,7 +1012,7 @@ $('#admin').addEventListener('submit',async e=>{
 const csv=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
 
 /* ===== Supabase ===== */
-function refresh(){cart=cart.filter(c=>PM(c.id));if($('#checkout').hidden)drawCart();route(true)}
+function refresh(){cart=cart.filter(c=>PM(c.id));if($('#checkout').hidden)drawCart(false);route(true)}
 const CF=window.X_CONFIG||{};
 const sb=(window.supabase&&CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY)?supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY):null;
 if(sb){ITEMS=[];ARCHDB=[];LOADED=false}else{CFGOK=true;applyCfg()}
@@ -868,7 +1033,7 @@ if(sb){
   sb.auth.onAuthStateChange((_e,x)=>{const was=CAN;CAN=!!x;if(was!==CAN)loadAll()});
 }
 
-/* ===== banner cookie ===== */
+/* ===== cookie ===== */
 (function(){
   const ck=$('#cookie');if(!ck)return;
   let ok=false;try{ok=localStorage.getItem('x_cookie')==='1'}catch(e){}
