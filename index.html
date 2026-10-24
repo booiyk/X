@@ -35,16 +35,16 @@ body.light header{background:#fff;color:#111}
 .logo{grid-column:1;justify-self:start;text-align:left;font:500 24px/.95 "Times New Roman",Times,serif;letter-spacing:.01em;text-transform:none;white-space:nowrap}
 .logo span{display:block}
 
-/* Menu Tengah Desktop */
-.head-nav{grid-column:2;justify-self:center;display:flex;gap:40px;align-items:center}
-.hn-drop{position:relative;padding:10px 0;cursor:pointer}
-.hn-drop > span, .hn-drop > a.hn-link{font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;display:block}
-.hn-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--bg);border:1px solid var(--line);min-width:180px;text-align:center;opacity:0;visibility:hidden;transition:opacity .2s;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-.hn-menu::before{content:"";position:absolute;top:-20px;height:20px;width:100%;left:0}
-body.light .hn-menu{background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-.hn-drop:hover .hn-menu{opacity:1;visibility:visible}
-.hn-menu a{display:block;padding:12px 16px;font-size:15px;color:var(--mute);transition:color .2s}
-.hn-menu a:hover{color:var(--fg);background:rgba(128,128,128,.1)}
+/* Menu Tengah Desktop - Mega Menu Style */
+.head-nav{grid-column:2;justify-self:center;position:static;display:flex;gap:40px;align-items:center}
+.hn-drop{position:static;cursor:pointer;padding:10px 0 30px;margin-bottom:-20px}
+.hn-drop > span, .hn-drop > a.hn-link{font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;display:block;transition:opacity .2s}
+.hn-drop:hover > span, .hn-drop:hover > a.hn-link{opacity:.5}
+.hn-menu{position:absolute;top:100%;left:0;right:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 20px 50px;opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s;box-shadow:0 20px 40px rgba(0,0,0,.4);border-top:1px solid var(--line)}
+body.light .hn-menu{background:#fff;box-shadow:0 20px 40px rgba(0,0,0,.08)}
+.hn-drop:hover .hn-menu{opacity:1;visibility:visible;transition:opacity .3s,visibility 0s}
+.hn-menu a{display:block;font-size:clamp(20px,2.5vw,26px);font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.02em;transition:opacity .2s}
+.hn-menu a:hover{opacity:.5}
 
 .hright{grid-column:3;justify-self:end;font-size:15px;display:flex;align-items:center}
 .bg{width:20px;height:20px;vertical-align:-4px;margin-right:6px}
@@ -124,18 +124,19 @@ body.light .hn-menu{background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.1)}
 .sz button[aria-pressed="true"]{border-color:#111}
 .sz button:disabled{text-decoration:line-through;color:var(--mute);cursor:not-allowed}
 .rh{font-size:clamp(30px,3.6vw,46px);margin:90px 0 26px}
-.relcar{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -22px;padding:0 22px 10px}
-.relcar::-webkit-scrollbar{display:none}
-.relcard{flex:0 0 clamp(150px,20vw,240px);scroll-snap-align:start}
-.relcard .pimg{aspect-ratio:1/1.05;margin-bottom:14px}
+
+/* ===== carousel produk & terkait ===== */
 .car{overflow:hidden;margin:0 -22px}
-.track{display:flex;width:max-content;animation:rt var(--d,40s) linear infinite}
+.track{display:flex;gap:24px;width:max-content;animation:rt var(--d,40s) linear infinite}
 .car:hover .track{animation-play-state:paused}
 @keyframes rt{from{transform:translateX(-50%)}to{transform:none}}
-.ar{flex:0 0 clamp(220px,24vw,360px);margin-right:24px;text-align:center}
+.relcard{flex:0 0 clamp(150px,20vw,240px)}
+.relcard .pimg{aspect-ratio:1/1.05;margin-bottom:14px}
+.ar{flex:0 0 clamp(220px,24vw,360px);text-align:center}
 .ar .pimg{background:none;margin-bottom:14px}
 .ar .pimg svg{width:60%}
 .ar em{display:block;font-style:normal;color:var(--mute);font-size:14px;margin-top:2px}
+
 .note{color:var(--mute);margin-top:28px;font-size:16px}
 footer{padding:20px 22px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid var(--line);color:var(--mute)}
 body.light footer{color:var(--fg)}
@@ -250,7 +251,6 @@ main.page.out{animation:pgOut .2s ease both}
 .krh{font-size:clamp(22px,2.4vw,30px);margin:40px 0 14px;font-weight:600;line-height:1}
 .krt{display:flex;gap:22px;font-size:18px;margin:-20px 0 6px}
 .krt a{color:var(--mute);border-bottom:1px solid transparent}.krt a[aria-current]{color:var(--fg);border-color:var(--fg)}
-#kr .ar{flex-basis:clamp(150px,17vw,260px);margin-right:20px}
 
 .gal{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
 .gal::-webkit-scrollbar{display:none}
@@ -325,7 +325,7 @@ main.page.out{animation:pgOut .2s ease both}
   .pd .l{padding:0}.pd h1{font-size:28px;text-align:left}
   .pd .r{align-items:stretch}.pd .r .btn-d{width:100%}.sz{justify-content:flex-start}
   .rh{margin:56px 0 18px;font-size:28px}
-  .relcar{margin:0 -16px;padding:0 16px 8px;gap:12px}
+  .track{gap:16px}
   .relcard{flex:0 0 44vw}
   .ar{flex-basis:62vw}
   .pane{padding:16px}.pane span{font-size:20px}
@@ -335,7 +335,7 @@ main.page.out{animation:pgOut .2s ease both}
   .ci .row{grid-auto-flow:row}.clogo{font-size:22px}
   .afg{grid-template-columns:1fr}.ar2{grid-template-columns:56px 1fr}.ar2 .ac,.ar2>select{grid-column:2}
   #checkout{grid-template-columns:1fr}.cl{padding:30px 16px}.cr{border:0;border-top:1px solid #e5e5e5;padding:30px 16px}
-  #kr .ar{flex-basis:44vw;margin-right:14px}.krh{margin:30px 0 10px;font-size:22px}.krt{margin:-8px 0 0}
+  #kr .ar{flex-basis:44vw}.krh{margin:30px 0 10px;font-size:22px}.krt{margin:-8px 0 0}
   .gal img,.gal video{max-height:52vh}.thumbs img{max-height:none}
   .cookie{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:12px 14px;font-size:12.5px}
 }
@@ -743,7 +743,7 @@ function renderPdp(i){
   const rel=ITEMS.filter(x=>x.g===i.g&&x.id!==i.id).sort((a,b)=>{const n=ITEMS.length,x=ITEMS.indexOf(i);return((ITEMS.indexOf(a)-x+n)%n)-((ITEMS.indexOf(b)-x+n)%n)}).slice(0,8);
   $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s])}</p></div><div class="m">${galHTML(i)}</div>
   <div class="r"><div class="sz" id="sz">${zs.map((z,k)=>`<button ${sold(i,k)?'disabled':''} aria-pressed="${z===selZ}">${z}</button>`).join('')}</div><button class="btn-d" id="add"${selZ?'':' disabled'}>${selZ?`Tambah ke keranjang — ${R(i.p)}`:'Habis'}</button></div></div>
-  <h2 class="rh rv">Terkait</h2>${rel.length?`<div class="relcar" aria-label="Produk terkait">${rel.map(x=>`<a class="pcard relcard" href="#/p/${x.id}"><div class="pimg">${pic(x)}</div><b>${esc(x.n)}</b><small>${R(x.p)}</small></a>`).join('')}</div>`:'<p class="note">Belum ada produk terkait.</p>'}`;
+  <h2 class="rh rv">Terkait</h2>${rel.length?`<div class="car rv" aria-label="Produk terkait"><div class="track" style="--d:${Math.max(rel.length*4, 20)}s">${(function(){let rL=rel;while(rL.length<6)rL=rL.concat(rel);const rt=rL.map(x=>`<a class="pcard relcard" href="#/p/${x.id}"><div class="pimg">${pic(x)}</div><b>${esc(x.n)}</b><small>${R(x.p)}</small></a>`).join('');return rt+rt})()}</div></div>`:'<p class="note">Belum ada produk terkait.</p>'}`;
   initReveal();
 }
 $('#pdp').addEventListener('scroll',e=>{const g=e.target;if(g.id!=='gal')return;const k=Math.round(g.scrollLeft/g.clientWidth);document.querySelectorAll('#thumbs button').forEach((b,j)=>b.setAttribute('aria-current',String(j===k)))},true);
