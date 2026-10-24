@@ -6,8 +6,8 @@
 <title>Héritiers du Vide</title>
 <meta name="description" content="Héritiers du Vide — pakaian, alas kaki, tas, aksesori, dan perhiasan.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80' font-family='Times New Roman'>H</text></svg>">
-<script src="config.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
+<script src="config.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" async></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap"></noscript>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap"></noscript>
@@ -24,21 +24,33 @@ button{background:none;border:0;cursor:pointer;padding:0}
 :focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 /* ===== header ===== */
-header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 22px;color:#fff;transition:background .3s,color .3s,opacity .2s}
+header{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:12px 22px;color:#fff;transition:background .3s,color .3s,opacity .2s}
 body.lock header{opacity:0;pointer-events:none}
 body.light header{background:#fff;color:#111}
-.burger{grid-column:1;justify-self:start;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;width:30px;height:30px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+.burger{display:none;grid-column:1;justify-self:start;flex-direction:column;justify-content:center;align-items:center;gap:6px;width:30px;height:30px;padding:0;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .burger span{display:block;height:1.5px;width:100%;background:currentColor;transition:transform .3s,width .3s;transform-origin:center}
 .burger span:last-child{width:60%}
 .burger[aria-expanded="true"] span:first-child{transform:translateY(3.75px) rotate(45deg)}
 .burger[aria-expanded="true"] span:last-child{width:100%;transform:translateY(-3.75px) rotate(-45deg)}
-.logo{grid-column:2;justify-self:center;text-align:center;font:500 20px/.95 "Times New Roman",Times,serif;letter-spacing:.01em;text-transform:none;white-space:nowrap}
-.logo span{display:block}
-.hright{grid-column:3;justify-self:end;font-size:15px}
+
+.logo{grid-column:1;justify-self:start;text-align:left;font:500 18px/1 "Times New Roman",Times,serif;letter-spacing:.01em;text-transform:none;white-space:nowrap}
+.logo span{display:inline}
+.logo span+span{margin-left:.28em}
+
+.hnav{grid-column:2;justify-self:center;display:flex;gap:32px;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.hnav a{color:inherit;opacity:.75;transition:opacity .2s,border-color .2s;padding-bottom:2px;border-bottom:1px solid transparent}
+.hnav a:hover{opacity:1;border-bottom-color:currentColor}
+
+.hright{grid-column:3;justify-self:end;font-size:15px;display:flex;align-items:center}
+#cartBtn{display:flex;align-items:center;gap:6px;font-weight:600}
+.bg{display:block;width:22px;height:22px}
+.ct{display:none}
+
 .bounce{animation:bnc .5s ease}
 @keyframes bnc{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.94)}100%{transform:scale(1)}}
 
-/* ===== panel menu ===== */
+/* ===== panel menu (mobile) ===== */
 .navpanel{position:fixed;top:0;left:0;bottom:0;width:min(360px,88vw);background:var(--bg);color:var(--fg);z-index:45;padding:calc(20px + env(safe-area-inset-top,0px)) 22px calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto;transform:translateX(-100%);visibility:hidden;box-shadow:6px 0 40px rgba(0,0,0,.35);transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s .4s}
 .navpanel.on{transform:translateX(0);visibility:visible;transition:transform .4s cubic-bezier(.22,.9,.3,1),visibility 0s}
 .nptop{display:flex;justify-content:space-between;align-items:center;padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:8px}
@@ -81,7 +93,7 @@ body.light header{background:#fff;color:#111}
 .vidsec::after{content:"";position:absolute;inset:auto 0 0;height:30%;background:linear-gradient(0deg,#000a,transparent);pointer-events:none}
 .vidfoot{position:absolute;left:22px;right:22px;bottom:22px;z-index:2;display:flex;justify-content:space-between;align-items:flex-end;font-size:18px}
 
-#shop,#pdp,#kr,#admin,#legal{padding:110px 22px 80px;min-height:100vh}
+#shop,#pdp,#kr,#admin,#legal{padding:100px 22px 80px;min-height:100vh}
 .title{display:flex;justify-content:space-between;align-items:center;margin-bottom:48px;gap:16px}
 .title h1{font-size:clamp(28px,3.6vw,46px);line-height:1;font-weight:600}
 .btn-d{display:inline-block;background:#111;color:#fff;padding:14px 18px;font-size:20px;text-align:center;transition:opacity .2s,transform .15s}
@@ -291,15 +303,18 @@ main.page.out{animation:pgOut .2s ease both}
 @media (max-width:1100px){.pd{gap:12px}.pd .l{padding:0 8px}}
 @media (max-width:860px){
   header{padding:12px 16px;gap:8px}
-  .logo{font-size:16px}
+  .burger{display:flex}
+  .hnav{display:none}
+  .logo{grid-column:2;justify-self:center;font-size:16px;text-align:center}
+  .logo span{display:block}
+  .logo span+span{margin-left:0}
   .hright{font-size:14px}
   .burger{width:26px;height:26px;gap:5px}
   .burger span{height:1.4px}
   .burger[aria-expanded="true"] span:first-child{transform:translateY(3.2px) rotate(45deg)}
   .burger[aria-expanded="true"] span:last-child{transform:translateY(-3.2px) rotate(-45deg)}
   .navpanel{width:min(340px,92vw);padding-left:18px;padding-right:18px}
-  .bg{display:inline-block;width:16px;height:16px;vertical-align:-3px;margin-right:2px}
-  .ct{display:none}
+  .bg{width:20px;height:20px;vertical-align:-3px;margin-right:2px}
   .duo{grid-template-columns:1fr;grid-template-rows:1fr 1fr;height:100svh}
   #shop,#pdp,#kr,#admin,#legal{padding:84px 16px 60px}
   .title{margin-bottom:28px}.title h1{font-size:26px}.btn-d{font-size:17px;padding:11px 14px}
@@ -325,6 +340,9 @@ main.page.out{animation:pgOut .2s ease both}
   .gal img,.gal video{max-height:52vh}.thumbs img{max-height:none}
   .cookie{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:12px 14px;font-size:12.5px}
 }
+@media (min-width:861px){
+  .navpanel, .scrim{display:none!important}
+}
 @media (max-width:480px){.exb{gap:8px}.exb span{font-size:13px;padding:0 4px;text-align:center;line-height:1.1;white-space:nowrap}.logo{font-size:15px}}
 @media (max-width:380px){.hright{font-size:14px}}
 @media (prefers-reduced-motion:reduce){
@@ -346,7 +364,17 @@ html,body{max-width:100%;overflow-x:hidden}
     <span></span>
   </button>
   <a class="logo" href="#/" aria-label="Héritiers du Vide"><span>Héritiers du</span><span>Vide</span></a>
-  <div class="hright"><button id="cartBtn" aria-label="Keranjang"><svg class="bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="ct">Keranjang </span>(<span id="cn" aria-live="polite">0</span>)</button></div>
+  <nav class="hnav" aria-label="Menu utama">
+    <a href="#/pria">Pria</a>
+    <a href="#/kronologi">Kronologi</a>
+    <a href="#/wanita">Wanita</a>
+  </nav>
+  <div class="hright">
+    <button id="cartBtn" aria-label="Keranjang">
+      <svg class="bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span>(<span id="cn" aria-live="polite">0</span>)</span>
+    </button>
+  </div>
 </header>
 
 <aside class="navpanel" id="navpanel" aria-hidden="true" aria-label="Menu utama">
@@ -532,7 +560,23 @@ const ROWS=[
 ['wanita','perhiasan','Anting Rantai Perak',650000,'gem',0],['wanita','perhiasan','Gelang Perak Tebal',920000,'gem',1]
 ];
 const DEF=ROWS.map((r,i)=>({id:i,g:r[0],c:r[1],n:r[2],p:r[3],s:r[4],nw:r[5]}));
-let ITEMS=DEF,ALL=[],ARC=[],ARCHDB=null,CFG={},ORDERS=[],CAN=false,LOADED=true;
+
+/* ===== CACHE LOKAL (SWR) ===== */
+let _cacheItems=null,_cacheArch=null,_cacheCfg=null,_cacheOrders=null;
+try{
+  const a=localStorage.getItem('x_items');if(a)_cacheItems=JSON.parse(a);
+  const b=localStorage.getItem('x_arch');if(b)_cacheArch=JSON.parse(b);
+  const c=localStorage.getItem('x_cfg');if(c)_cacheCfg=JSON.parse(c);
+}catch(e){}
+
+let ITEMS=(_cacheItems&&_cacheItems.length)?_cacheItems:DEF;
+let ALL=(_cacheItems&&_cacheItems.length)?_cacheItems:DEF;
+let ARC=(_cacheArch||[]);
+let ARCHDB=(_cacheArch&&_cacheArch.length)?_cacheArch:null;
+let CFG=_cacheCfg||{};
+let ORDERS=[],CAN=false;
+let LOADED=(_cacheItems&&_cacheItems.length)?true:false;
+
 const PM=id=>ITEMS.find(x=>String(x.id)===String(id));
 const hs=s=>[...String(s)].reduce((a,c)=>a+c.charCodeAt(0),0);
 const arr=v=>{
@@ -660,7 +704,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNav();closeCar
 const subtotal=()=>cart.reduce((a,c)=>a+c.q*PM(c.id).p,0);
 let lastCount=0;
 function drawCart(bounce){
-  if(!LOADED)return;
+  if(!ITEMS.length)return;
   const n=cart.reduce((a,c)=>a+c.q,0);
   $('#cn').textContent=n;$('#dsum').textContent=R(subtotal());$('#dgo').hidden=!n;
   if(bounce&&n>lastCount)bounceCart();
@@ -679,7 +723,10 @@ $('#ditems').onclick=e=>{
 let curG='pria',curC='baru',sortBy='new',fopen=false;
 function skHTML(){return `<div class="grid3 sk">${Array.from({length:6}).map(()=>`<div class="pcard"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line s"></div></div>`).join('')}</div>`}
 function renderShop(){
-  if(!LOADED){$('#shop').innerHTML=`<div class="title"><h1>Memuat…</h1></div>${skHTML()}`;return}
+  if(!LOADED){
+    $('#shop').innerHTML=`<div class="title"><h1>Memuat…</h1></div>${skHTML()}`;
+    return;
+  }
   let L=ITEMS.filter(i=>i.g===curG&&(curC==='baru'?i.nw:i.c===curC));
   if(sortBy==='lo')L=[...L].sort((a,b)=>a.p-b.p);if(sortBy==='hi')L=[...L].sort((a,b)=>b.p-a.p);
   const opt=[['new','Terbaru'],['lo','Harga terendah'],['hi','Harga tertinggi']];
@@ -834,7 +881,7 @@ $('#checkout').addEventListener('click',e=>{
 
 /* ===== indikator halaman aktif di panel ===== */
 function syncNav(active){
-  navpanel.querySelectorAll('.npnav a').forEach(a=>{
+  document.querySelectorAll('.npnav a, .hnav a').forEach(a=>{
     const href=a.getAttribute('href').replace(/^#\//,'');
     const on=active&&href.startsWith(active);
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
@@ -888,7 +935,7 @@ addEventListener('hashchange',()=>route());drawCart(false);
 initReveal();
 
 /* ===== video & tampilan ===== */
-const D0M='media/hero-pria.jpg',D0W='media/hero-wanita.jpg';let curV=null,CFGOK=false;
+const D0M='media/hero-pria.jpg',D0W='media/hero-wanita.jpg';let curV=null,CFGOK=true;
 function setVideo(src){
   if(src===curV)return;curV=src;
   const f=$('#film'),o=f.querySelector('video');if(o)o.remove();
@@ -909,8 +956,6 @@ const pickVideo=()=>(MQ.matches&&CFG.videoM)||CFG.video||VIDEO_SRC;
 MQ.addEventListener?MQ.addEventListener('change',()=>applyCfg()):MQ.addListener(()=>applyCfg());
 function setImg(el,src){if(el.dataset.s===src)return;el.dataset.s=src;el.classList.remove('on');el.onload=el.onerror=()=>el.classList.add('on');el.src=src}
 function applyCfg(){if(!CFGOK)return;setImg($('#hM'),CFG.heroM||D0M);setImg($('#hW'),CFG.heroW||D0W);setVideo(pickVideo())}
-try{const c=localStorage.getItem('x_cfg');if(c)CFG=JSON.parse(c)||{}}catch(e){}
-CFGOK=true;
 applyCfg();
 
 /* ===== pesanan ===== */
@@ -1031,20 +1076,29 @@ $('#admin').addEventListener('submit',async e=>{
 const csv=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
 
 /* ===== Supabase ===== */
-function refresh(){cart=cart.filter(c=>PM(c.id));saveCart();if($('#checkout').hidden)drawCart(false);else renderCo();route(true)}
+function refresh(){
+  cart=cart.filter(c=>PM(c.id));saveCart();
+  if($('#checkout').hidden)drawCart(false);else renderCo();
+  route(true);
+}
 const CF=window.X_CONFIG||{};
 const sb=(window.supabase&&CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY)?supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY):null;
-if(sb){ITEMS=[];ARCHDB=[];LOADED=false}
+if(sb&&!_cacheItems){ITEMS=[];ALL=[];LOADED=false}
 async function setCfg(c){await ok(sb.from('site').upsert({id:'config',data:c}));await loadAll()}
 async function loadAll(){
   if(!sb)return;
   try{
     const [p,a,c]=await Promise.all([sb.from('products').select('*').order('created_at'),sb.from('archive').select('*').order('created_at'),sb.from('site').select('data').eq('id','config').maybeSingle()]);
-    if(!p.error){ALL=p.data;ITEMS=ALL.filter(x=>!x.hidden)}else ITEMS=DEF
-    if(!a.error){ARC=a.data;ARCHDB=ARC}else ARCHDB=null
+    if(!p.error){ALL=p.data;ITEMS=ALL.filter(x=>!x.hidden);try{localStorage.setItem('x_items',JSON.stringify(ALL))}catch(e){}}
+    else ITEMS=(_cacheItems||DEF),ALL=(_cacheItems||DEF);
+    if(!a.error){ARC=a.data;ARCHDB=ARC;try{localStorage.setItem('x_arch',JSON.stringify(ARC))}catch(e){}}
     if(!c.error){CFG=(c.data&&c.data.data)||{};try{localStorage.setItem('x_cfg',JSON.stringify(CFG))}catch(e){}}
     if(CAN){const o=await sb.from('orders').select('*').order('ts',{ascending:false});if(!o.error)ORDERS=o.data}
-  }catch(e){if(!ITEMS.length)ITEMS=DEF;if(ARCHDB&&!ARCHDB.length)ARCHDB=null}
+  }catch(e){
+    if(!ITEMS.length)ITEMS=DEF;
+    if(!ALL.length)ALL=DEF;
+    if(ARCHDB&&!ARCHDB.length)ARCHDB=null;
+  }
   LOADED=true;CFGOK=true;applyCfg();refresh();
   if(!$('#checkout').hidden)renderCo();
 }
