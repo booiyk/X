@@ -10,7 +10,6 @@ Pembayaran belum ada (checkout masih simulasi).
 - `vercel.json` — pengaturan alamat bersih
 - `config.js` — tempat mengisi data Supabase
 - `supabase.sql` — pembuat tabel dan aturan keamanan
-- `media/` — foto hero bawaan (`hero-pria.jpg`, `hero-wanita.jpg`). Video opsional: taruh `media/video.mp4`
 
 ## 1. Siapkan Supabase (sekali saja)
 1. Daftar di supabase.com, lalu **New project**. Simpan kata sandi database-nya.
