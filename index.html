@@ -44,19 +44,18 @@ body.light header:has(.hn-drop:hover){background:#fff}
 .hn-drop > span, .hn-drop > a.hn-link{font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;display:block;transition:opacity .2s}
 .hn-drop:hover > span, .hn-drop:hover > a.hn-link{opacity:.5}
 
-/* Dropdown Terpusat (Centered Dropdown) */
+/* Dropdown Terpusat & Background */
 .hn-menu{
   position:absolute;
   top:64px;
   left:50%;
   transform:translateX(-50%);
-  background:#000;
+  background:#000; /* Background dropdown menyambung dengan header */
   display:flex;
   flex-direction:column;
-  align-items:center;
-  gap:12px;
-  padding:20px 24px 28px;
-  min-width:180px;
+  align-items:stretch;
+  padding:12px 0 16px;
+  min-width:200px;
   opacity:0;
   visibility:hidden;
   transition:opacity .2s,visibility 0s .2s;
@@ -64,8 +63,27 @@ body.light header:has(.hn-drop:hover){background:#fff}
 }
 body.light .hn-menu{background:#fff;box-shadow:0 14px 30px rgba(0,0,0,.08)}
 .hn-drop:hover .hn-menu{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
-.hn-menu a{display:block;text-align:center;font-size:clamp(16px,1.8vw,20px);font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.02em;transition:opacity .2s}
-.hn-menu a:hover{opacity:.5}
+
+/* Item di dalam Dropdown dengan Background Hover */
+.hn-menu a{
+  display:block;
+  text-align:center;
+  font-size:clamp(15px,1.6vw,18px);
+  font-weight:600;
+  color:var(--fg);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  padding:10px 24px;
+  transition:background .2s, color .2s;
+}
+.hn-menu a:hover{
+  background:#1a1a1a; /* Background item saat disorot (Mode Gelap) */
+  color:#fff;
+}
+body.light .hn-menu a:hover{
+  background:#f2f2f2; /* Background item saat disorot (Mode Terang) */
+  color:#000;
+}
 
 .hright{grid-column:3;justify-self:end;font-size:15px;display:flex;align-items:center}
 .bg{width:20px;height:20px;vertical-align:-4px;margin-right:6px}
