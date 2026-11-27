@@ -13,7 +13,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80' font-family='Times New Roman'>H</text></svg>">
 <script src="config.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap"></noscript>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap"></noscript>
@@ -67,7 +67,7 @@ body.light header:has(.hn-drop:hover){background:#fff}
   transition:opacity .2s,visibility 0s .2s;
 }
 body.light .hn-menu{background:#fff;}
-.hn-drop:hover .hn-menu{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
+.hn-drop:hover .hn-menu,.hn-drop:focus-within .hn-menu{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
 
 /* Item di dalam Dropdown (Clean Text Hover) */
 .hn-menu a{
@@ -133,7 +133,7 @@ body.light .hn-menu{background:#fff;}
 .vidfoot{position:absolute;left:22px;right:22px;bottom:22px;z-index:2;display:flex;justify-content:space-between;align-items:flex-end;font-size:18px}
 
 #shop,#pdp,#kr,#admin,#legal{padding:110px 22px 80px;min-height:100vh}
-.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:48px;gap:16px}
+.title{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:48px;gap:16px}
 .title h1{font-size:clamp(28px,3.6vw,46px);line-height:1;font-weight:600}
 .btn-d{display:inline-block;background:#111;color:#fff;padding:14px 18px;font-size:20px;text-align:center;transition:opacity .2s,transform .15s}
 .btn-d:disabled{opacity:.45;cursor:not-allowed}
@@ -164,7 +164,7 @@ body.light .hn-menu{background:#fff;}
 .rh{font-size:clamp(30px,3.6vw,46px);margin:90px 0 26px}
 
 /* ===== carousel produk & terkait ===== */
-.car{overflow:hidden;margin:0 -22px}
+.car{overflow:hidden;margin:0 -22px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
 .track{display:flex;gap:24px;width:max-content;animation:rt var(--d,40s) linear infinite}
 .car:hover .track{animation-play-state:paused}
 @keyframes rt{from{transform:translateX(-50%)}to{transform:none}}
@@ -338,7 +338,7 @@ main.page.out{animation:pgOut .2s ease both}
 .cookie a{text-decoration:underline;font-weight:600}
 .cookie button{background:#111;color:#fff;padding:10px 18px;border-radius:6px;font:600 14px Arial,sans-serif;text-transform:none;letter-spacing:0;flex-shrink:0}
 .cookie button:hover{opacity:.85}
-body:has(.cookie.on){padding-bottom:104px}
+body:has(.cookie.on),body.has-cookie{padding-bottom:104px}
 
 @media (max-width:1100px){.pd{gap:12px}.pd .l{padding:0 8px}}
 @media (max-width:860px){
@@ -378,7 +378,7 @@ body:has(.cookie.on){padding-bottom:104px}
   .gal img,.gal video{max-height:52vh}.thumbs img{max-height:none}
   .cookie{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:12px 14px;font-size:12.5px}
 }
-@media (max-width:480px){.exb{gap:8px}.exb span{font-size:13px;padding:0 4px;text-align:center;line-height:1.1;white-space:nowrap}.logo{font-size:15px}}
+@media (max-width:480px){.exb{gap:8px}.exb span{font-size:13px;padding:0 4px;text-align:center;line-height:1.1;white-space:nowrap}.logo{font-size:15px}.quote p{white-space:normal}}
 @media (max-width:380px){.hright{font-size:14px}}
 @media (prefers-reduced-motion:reduce){
   *,.film::before,.film::after{animation:none!important;transition:none!important}
@@ -401,7 +401,7 @@ html,body{max-width:100%;overflow-x:hidden}
   <a class="logo" href="#/" aria-label="Héritiers du Vide"><span>Héritiers du</span><span>Vide</span></a>
   
   <nav class="head-nav">
-    <div class="hn-drop">
+    <div class="hn-drop" tabindex="0">
       <span>Pria</span>
       <div class="hn-menu">
         <a href="#/pria/baru">Koleksi Baru</a>
@@ -413,7 +413,7 @@ html,body{max-width:100%;overflow-x:hidden}
       </div>
     </div>
     
-    <div class="hn-drop">
+    <div class="hn-drop" tabindex="0">
       <span>Kronologi</span>
       <div class="hn-menu">
         <a href="#/kronologi/pria">Pria</a>
@@ -421,7 +421,7 @@ html,body{max-width:100%;overflow-x:hidden}
       </div>
     </div>
 
-    <div class="hn-drop">
+    <div class="hn-drop" tabindex="0">
       <span>Wanita</span>
       <div class="hn-menu">
         <a href="#/wanita/baru">Koleksi Baru</a>
@@ -557,10 +557,13 @@ html,body{max-width:100%;overflow-x:hidden}
 
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
+const FALLBACK_IMG='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="420"><rect width="100%" height="100%" fill="#e8e5e0"/><text x="50%" y="52%" font-family="Arial" font-size="20" fill="#8d8a85" text-anchor="middle">Héritiers du Vide</text></svg>');
+document.addEventListener('error',e=>{const t=e.target;if(t&&t.tagName==='IMG'&&!t.dataset.fb){t.dataset.fb='1';t.src=FALLBACK_IMG}},true);
 
 const VIDEO_SRC="https://luvmqahvvlkrrlromxnl.supabase.co/storage/v1/object/public/media/1792847313631-465837.mp4";
 const $=s=>document.querySelector(s),R=n=>'Rp '+n.toLocaleString('id-ID');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const safeDec=s=>{try{return decodeURIComponent(s)}catch(e){return s}};
 const RM=matchMedia('(prefers-reduced-motion: reduce)');
 const CATS=[['baru','Koleksi Baru'],['rtw','Siap Pakai'],['sepatu','Sepatu'],['tas','Tas'],['aksesoris','Aksesoris'],['perhiasan','Perhiasan']];
 const GEN=[['pria','Pria'],['wanita','Wanita']],CATO=CATS.slice(1);
@@ -589,10 +592,10 @@ const isV=u=>/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
 const vEl=u=>`<video src="${esc(u)}" muted loop playsinline autoplay preload="metadata"></video>`;
 const pic=i=>{
   const L=imgList(i),u=L.find(x=>!isV(x))||L[0];
-  return u?(isV(u)?vEl(u):`<img src="${esc(u)}" alt="${esc(i.n||'')}" loading="lazy" decoding="async">`):S[i.s];
+  return u?(isV(u)?vEl(u):`<img src="${esc(u)}" alt="${esc(i.n||'')}" loading="lazy" decoding="async">`):(S[i.s]||S.tee);
 };
 const galHTML=i=>{
-  const L=imgList(i);if(!L.length)return S[i.s];
+  const L=imgList(i);if(!L.length)return S[i.s]||S.tee;
   const im=L.map((u,k)=>isV(u)?vEl(u):`<img src="${esc(u)}" alt="${esc(i.n)} ${k+1}"${k?' loading="lazy"':''} decoding="async">`).join('');
   if(L.length===1)return `<div class="gal">${im}</div>`;
   return `<div class="gal-wrap"><div class="gal" id="gal">${im}</div></div><div class="thumbs" id="thumbs">${L.map((u,k)=>`<button data-th="${k}" aria-label="Media ${k+1}" aria-current="${k===0}">${isV(u)?`<video src="${esc(u)}#t=0.1" muted preload="metadata"></video>`:`<img src="${esc(u)}" alt="">`}</button>`).join('')}</div>`;
@@ -620,7 +623,7 @@ const ROWS=[
 ['wanita','perhiasan','Anting Rantai Perak',650000,'gem',0],['wanita','perhiasan','Gelang Perak Tebal',920000,'gem',1]
 ];
 const DEF=ROWS.map((r,i)=>({id:i,g:r[0],c:r[1],n:r[2],p:r[3],s:r[4],nw:r[5]}));
-let ITEMS=DEF,ALL=[],ARC=[],ARCHDB=null,CFG={},ORDERS=[],CAN=false,LOADED=true;
+let ITEMS=DEF,ALL=[],ARC=[],ARCHDB=null,CFG={},ORDERS=[],CAN=false,LOADED=true,SAMPLE=false;
 const PM=id=>ITEMS.find(x=>String(x.id)===String(id));
 const hs=s=>[...String(s)].reduce((a,c)=>a+c.charCodeAt(0),0);
 const arr=v=>{
@@ -634,7 +637,7 @@ const arr=v=>{
 };
 const SZ=i=>{const z=arr(i.z);return z.length?z:i.s==='shoe'?['39','40','41','42','43','44']:['tee','hood','pants','coat'].includes(i.s)?['XS','S','M','L','XL','2XL']:['Satu ukuran']};
 const sold=(i,k)=>{const zs=SZ(i),xs=arr(i.x);return xs.length?xs.includes(zs[k]):false};
-const card=(i,k=0)=>`<a class="pcard rv" style="transition-delay:${Math.min(k,12)*40}ms" href="#/p/${i.id}"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small></a>`;
+const card=(i,k=0)=>`<a class="pcard rv" style="transition-delay:${Math.min(k,12)*40}ms" href="#/p/${encodeURIComponent(i.id)}"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small></a>`;
 const AN={coat:['Jaket Kulit Klasik','Mantel Wol Lama'],tee:['Kaos Grafis Lama','Kaos Lengan Panjang'],hood:['Hoodie Zip Lama','Hoodie Bordir'],pants:['Celana Denim Robek','Celana Lipit Wol'],shoe:['Bot Kerja Kulit','Sepatu Loafer'],bag:['Tas Pos Kulit','Tas Punggung Kanvas'],acc:['Topi Bulu Pemburu','Ikat Pinggang Paku'],gem:['Kalung Elang Perak','Anting Salib Perak']};
 const CSH={rtw:['coat','tee','hood','pants'],sepatu:['shoe'],tas:['bag'],aksesoris:['acc'],perhiasan:['gem']};
 const dflt=(g,c)=>CSH[c].flatMap((s,j)=>AN[s].map((n,m)=>({n,s,p:350000+((j*5+m*3+(g==='pria'?0:2))%9)*325000})));
@@ -751,7 +754,7 @@ $('#cartBtn').onclick=openCart;
 $('#dclose').onclick=closeCart;
 $('#dgo').onclick=closeCart;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNav();closeCart()}});
-const subtotal=()=>cart.reduce((a,c)=>a+c.q*PM(c.id).p,0);
+const subtotal=()=>cart.reduce((a,c)=>{const i=PM(c.id);return a+(i?c.q*i.p:0)},0);
 let lastCount=0;
 function drawCart(bounce){
   if(!LOADED) return;
@@ -785,9 +788,9 @@ function renderShop(){
   if(q)L=L.filter(i=>i.n.toLowerCase().includes(q.toLowerCase()));
   if(sortBy==='lo')L=[...L].sort((a,b)=>a.p-b.p);if(sortBy==='hi')L=[...L].sort((a,b)=>b.p-a.p);
   const opt=[['new','Terbaru'],['lo','Harga terendah'],['hi','Harga tertinggi']];
-  $('#shop').innerHTML=`<div class="title"><h1>${curG==='pria'?'Pria':'Wanita'} &gt; ${CATS.find(x=>x[0]===curC)[1]}</h1><input id="sq" type="search" placeholder="Cari produk…" value="${esc(q)}" aria-label="Cari produk" style="height:36px;border:1px solid var(--line);border-radius:4px;padding:0 10px;background:var(--bg);color:var(--fg);font:400 15px Arial,sans-serif;text-transform:none;letter-spacing:0"><button class="btn-d" id="fb" aria-expanded="${fopen}">Filter</button></div>
+  $('#shop').innerHTML=`<div class="title"><h1>${curG==='pria'?'Pria':'Wanita'} &gt; ${CATS.find(x=>x[0]===curC)[1]}</h1><input id="sq" type="search" placeholder="Cari produk…" value="${esc(q)}" aria-label="Cari produk" style="flex:1 1 180px;min-width:0;max-width:320px;height:36px;border:1px solid var(--line);border-radius:4px;padding:0 10px;background:var(--bg);color:var(--fg);font:400 15px Arial,sans-serif;text-transform:none;letter-spacing:0"><button class="btn-d" id="fb" aria-expanded="${fopen}">Filter</button></div>
   <div class="filters"${fopen?'':' hidden'}>${opt.map(([k,l])=>`<button data-sort="${k}" aria-pressed="${sortBy===k}">${l}</button>`).join('')}</div>
-  <div class="grid3">${L.map(card).join('')}</div>${L.length?'':'<p class="note">Belum ada produk di kategori ini. <a href="#/pria" style="text-decoration:underline">Lihat koleksi Pria →</a></p>'}`;
+  ${SAMPLE?'<p class="note">Menampilkan katalog contoh — tambahkan produk asli lewat dashboard admin.</p>':''}<div class="grid3">${L.map(card).join('')}</div>${L.length?'':'<p class="note">Belum ada produk di kategori ini. <a href="#/pria" style="text-decoration:underline">Lihat koleksi Pria →</a></p>'}`;
   initReveal();
 }
 $('#shop').addEventListener('input',e=>{
@@ -801,11 +804,12 @@ $('#shop').onclick=e=>{
 /* ===== detail produk ===== */
 let pI=null,selZ=null;
 function renderPdp(i){
-  pI=i;const zs=SZ(i);selZ=zs.find((z,k)=>!sold(i,k));
+  const keepSel=(pI&&String(pI.id)===String(i.id))?selZ:null;
+  pI=i;const zs=SZ(i);selZ=(keepSel&&zs.includes(keepSel)&&!sold(i,zs.indexOf(keepSel)))?keepSel:zs.find((z,k)=>!sold(i,k));
   const rel=[...new Map(ITEMS.filter(x=>x.g===i.g&&x.id!==i.id).sort((a,b)=>{const n=ITEMS.length,x=ITEMS.indexOf(i);return((ITEMS.indexOf(a)-x+n)%n)-((ITEMS.indexOf(b)-x+n)%n)}).map(x=>[x.n.toLowerCase(),x])).values()].slice(0,8); // terkait: satu kartu per nama produk
-  $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s])}</p></div><div class="m">${galHTML(i)}</div>
+  $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s]||'Produk Héritiers du Vide. Dibuat di Indonesia.')}</p></div><div class="m">${galHTML(i)}</div>
   <div class="r"><div class="sz" id="sz">${zs.map((z,k)=>`<button ${sold(i,k)?'disabled':''} aria-pressed="${z===selZ}">${z}</button>`).join('')}</div><button class="btn-d" id="add"${selZ?'':' disabled'}>${selZ?`Tambah ke keranjang — ${R(i.p)}`:'Habis'}</button></div></div>
-  <h2 class="rh rv">Terkait</h2>${rel.length?`<div class="car rv" aria-label="Produk terkait"><div class="track" style="--d:${Math.max(rel.length*4, 20)}s">${(function(){let rL=rel;while(rL.length<6)rL=rL.concat(rel);const rt=rL.map(x=>`<a class="pcard relcard" href="#/p/${x.id}"><div class="pimg">${pic(x)}</div><b>${esc(x.n)}</b><small>${R(x.p)}</small></a>`).join('');return rt+rt})()}</div></div>`:'<p class="note">Belum ada produk terkait.</p>'}`;
+  <h2 class="rh rv">Terkait</h2>${rel.length?`<div class="car rv" aria-label="Produk terkait"><div class="track" style="--d:${Math.max(rel.length*4, 20)}s">${(function(){let rL=rel;while(rL.length<6)rL=rL.concat(rel);const rt=rL.map(x=>`<a class="pcard relcard" href="#/p/${encodeURIComponent(x.id)}"><div class="pimg">${pic(x)}</div><b>${esc(x.n)}</b><small>${R(x.p)}</small></a>`).join('');return rt+rt})()}</div></div>`:'<p class="note">Belum ada produk terkait.</p>'}`;
   initReveal();
 }
 $('#pdp').addEventListener('scroll',e=>{const g=e.target;if(g.id!=='gal')return;const k=Math.round(g.scrollLeft/g.clientWidth);document.querySelectorAll('#thumbs button').forEach((b,j)=>b.setAttribute('aria-current',String(j===k)))},true);
@@ -862,7 +866,7 @@ function renderKr(g){
 }
 
 /* ===== checkout ===== */
-let step=1,info={},ship=25000,code='',dmsg='',orderNo='',payErr='';
+let step=1,info={},ship=25000,code='',dmsg='',orderNo='',payErr='',lastEmail='';
 let lastStepRendered=null;
 const SH=[['Reguler (3–5 hari kerja)',25000],['Ekspres (1–2 hari kerja)',60000]];
 const PAY=['Transfer bank / virtual account','QRIS','Kartu kredit atau debit'];
@@ -875,12 +879,12 @@ function sumHTML(){
   <div class="tr"><span>Subtotal</span><span>${R(sub)}</span></div>
   ${d?`<div class="tr"><span>Diskon</span><span>−${R(d)}</span></div>`:''}
   <div class="tr"><span>Pengiriman</span><span>${sc===null?'Dihitung di langkah berikutnya':R(sc)}</span></div>
-  <div class="tr t"><span>Total</span><span><small>IDR</small> ${R(tot)}</span></div>`;
+  <div class="tr t"><span>Total</span><span>${R(tot)}</span></div>`;
 }
 function leftHTML(){
   const bc=['Informasi','Pengiriman','Pembayaran'].map((l,k)=>step>k+1&&step<4?`<button data-s="${k+1}">${l}</button>`:`<span class="${step===k+1?'cu':''}">${l}</span>`).join('<span>›</span>');
   const head='';
-  if(step===4)return `${head}<div class="ok"><h2>Pesanan diterima</h2><p>Nomor pesanan ${esc(orderNo)}. Konfirmasi dikirim ke ${esc(info.email||'surel Anda')}.</p><p style="margin-top:12px">Belum ada pembayaran yang diproses. Kami akan menghubungi Anda untuk konfirmasi pembayaran sebelum pesanan diproses.</p><p style="margin-top:24px"><a class="btn-d" href="#/">Kembali ke toko</a></p></div>`;
+  if(step===4)return `${head}<div class="ok"><h2>Pesanan diterima</h2><p>Nomor pesanan ${esc(orderNo)}. Konfirmasi dikirim ke ${esc(lastEmail||'surel Anda')}.</p><p style="margin-top:12px">Belum ada pembayaran yang diproses. Kami akan menghubungi Anda untuk konfirmasi pembayaran sebelum pesanan diproses.</p><p style="margin-top:24px"><a class="btn-d" href="#/">Kembali ke toko</a></p></div>`;
   if(!cart.length)return `${head}<p>Keranjang Anda kosong.</p><p style="margin-top:20px"><a class="btn-d" href="#/pria">Lanjut belanja</a></p>`;
   const adr=`${esc(info.address||'')}, ${esc(info.city||'')} ${esc(info.zip||'')}`;
   const top=`${head}<nav class="bc">${bc}</nav>`;
@@ -889,13 +893,15 @@ function leftHTML(){
   <h3>Alamat pengiriman</h3><select name="country" aria-label="Negara"><option${!info.country||info.country==='Indonesia'?' selected':''}>Indonesia</option><option${info.country==='Singapura'?' selected':''}>Singapura</option><option${info.country==='Malaysia'?' selected':''}>Malaysia</option></select>
   <div class="row"><input name="fn" placeholder="Nama depan (opsional)" value="${esc(info.fn||'')}"><input name="ln" placeholder="Nama belakang" required value="${esc(info.ln||'')}"></div>
   <input name="address" placeholder="Alamat" required value="${esc(info.address||'')}"><input name="apt" placeholder="Apartemen, unit, dll. (opsional)" value="${esc(info.apt||'')}">
-  <div class="row"><input name="city" placeholder="Kota" required value="${esc(info.city||'')}"><select name="prov" aria-label="Provinsi">${PROV.map(p=>`<option${p===info.prov?' selected':''}>${p}</option>`).join('')}</select><input name="zip" placeholder="Kode pos" required value="${esc(info.zip||'')}"></div>
+  <div class="row"><input name="city" placeholder="Kota" required value="${esc(info.city||'')}">${info.country&&info.country!=='Indonesia'?`<input name="prov" placeholder="Wilayah / Negeri" required value="${esc(info.prov||'')}">`:`<select name="prov" aria-label="Provinsi" required><option value=""${!info.prov?' selected':''}>Pilih provinsi</option>${PROV.map(p=>`<option${p===info.prov?' selected':''}>${p}</option>`).join('')}</select>`}<input name="zip" placeholder="Kode pos" required value="${esc(info.zip||'')}"></div>
   <input name="phone" type="tel" placeholder="Telepon" value="${esc(info.phone||'')}"><div class="cfoot"><button class="cbtn">Lanjut ke pengiriman</button></div></form>`;
   const rows=`<div class="box"><div><span>Kontak</span><span>${esc(info.email||'')}</span></div><div><span>Kirim ke</span><span>${adr}</span></div></div>`;
   if(step===2)return `${top}${rows}<form id="f2"><h3>Metode pengiriman</h3>${SH.map(([l,c])=>`<label class="opt"><input type="radio" name="ship" value="${c}" ${c===ship?'checked':''}><span>${l}</span><span>${R(c)}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Lanjut ke pembayaran</button></div></form>`;
-  return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3><p class="note" style="margin:0 0 14px">Belum ada pembayaran online. Pilih metode yang Anda inginkan — kami akan menghubungi Anda untuk konfirmasi pembayaran sebelum pesanan diproses.</p>${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" value="${esc(l)}" ${k?'':'checked'}><span>${l}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Buat pesanan</button></div></form>`;
+  return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3><p class="note" style="margin:0 0 14px">Belum ada pembayaran online. Pilih metode yang Anda inginkan — kami akan menghubungi Anda untuk konfirmasi pembayaran sebelum pesanan diproses.</p>${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" value="${esc(l)}" ${info.pay===l||(!info.pay&&k===0)?'checked':''}><span>${l}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Buat pesanan</button></div></form>`;
 }
 function renderCo(){
+  const f1=document.querySelector('#f1');
+  if(f1){try{const fd=new FormData(f1);const v=Object.fromEntries(fd);v.news=fd.has('news');info={...info,...v}}catch(e){}}
   if(!LOADED){$('#checkout').innerHTML='<div class="cl"><div class="ci">Memuat…</div></div>';return}
   const stepChanged=lastStepRendered!==null&&lastStepRendered!==step;
   const dir=stepChanged?(step>lastStepRendered?'f':'b'):'';
@@ -918,12 +924,22 @@ $('#checkout').addEventListener('submit',async e=>{
   const btn=e.target.querySelector('.cbtn');
   if(btn){btn.disabled=true;btn.textContent='Memproses…'}
   orderNo='X-'+Date.now().toString(36).toUpperCase()+'-'+Math.floor(100+Math.random()*900);
+  if(sb){
+    try{
+      const {data:live,error:verr}=await sb.from('products').select('id,p,hidden');
+      if(!verr&&live){
+        const map=new Map(live.map(x=>[String(x.id),x]));
+        const bad=cart.some(c=>{const cur=PM(c.id);if(!cur)return true;const l=map.get(String(c.id));if(l)return l.hidden||l.p!==cur.p;const d=DEF.find(x=>String(x.id)===String(c.id));return !d||d.p!==cur.p});
+        if(bad){payErr='Keranjang berubah (produk atau harga sudah diperbarui). Periksa kembali keranjang Anda.';drawCart(false);renderCo();scrollTo(0,0);return}
+      }
+    }catch(err){console.error(err)}
+  }
   const saved=await saveOrder();
   if(!saved){
     orderNo='';payErr='Pesanan gagal disimpan. Periksa koneksi Anda lalu coba lagi.';
     renderCo();scrollTo(0,0);return;
   }
-  payErr='';step=4;cart=[];code='';dmsg='';
+  payErr='';step=4;lastEmail=info.email||'';info={};ship=25000;cart=[];code='';dmsg='';
   saveCart(); // Simpan pengosongan keranjang
   drawCart(false);renderCo();scrollTo(0,0);
 });
@@ -950,7 +966,7 @@ function syncNav(active){
 let routeToken=0;
 function route(keep){
   const p=location.hash.replace(/^#\/?/,'').split('/'),k=p[0];
-  const IT=k==='p'?PM(p[1]):null;
+  const IT=k==='p'?PM(safeDec(p[1])):null;
   const gd=(k==='pria'||k==='wanita')?k:(IT?IT.g:null);
   const page=IT?'pdp':gd?'shop':k==='kronologi'?'kr':k==='checkout'?'checkout':k==='admin'?'admin':k==='legal'?'legal':'home';
   const ids=['home','shop','pdp','kr','checkout','admin','legal'];
@@ -965,11 +981,11 @@ function route(keep){
     document.body.classList.toggle('light',page!=='home');
     const el=$('#'+page);
     el.classList.remove('out');
-    if(page==='shop'){curG=gd;curC=CATS.some(x=>x[0]===p[1])?p[1]:'baru';fopen=keep?fopen:false;renderShop()}
+    if(page==='shop'){curG=gd;curC=CATS.some(x=>x[0]===p[1])?p[1]:'baru';fopen=keep?fopen:false;if(!keep)q='';renderShop()}
     if(page==='pdp')renderPdp(IT);
     if(page==='kr')renderKr(p[1]);
     if(page==='checkout'&&!keep){
-      if(step===4){step=1;code='';dmsg='';orderNo='';lastStepRendered=1}
+      if(step===4){step=1;code='';dmsg='';orderNo='';lastEmail='';lastStepRendered=1}
       payErr='';
       renderCo();
     }
@@ -989,7 +1005,7 @@ function route(keep){
     doRender();
   },180);
 }
-addEventListener('hashchange',()=>route());drawCart(false);
+addEventListener('hashchange',()=>route());
 initReveal();
 
 /* ===== video & tampilan ===== */
@@ -1001,13 +1017,13 @@ function setVideo(src){
   if(!src)return;
   const v=document.createElement('video');
   v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.controls=true;
-  v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');
+  v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-label','Video koleksi');
   v.preload='metadata';
   f.append(v);
   v.addEventListener('loadeddata',()=>{f.classList.add('real');v.classList.add('on')});
   const go=()=>{v.src=src;const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})};
   if('IntersectionObserver' in window){const io=new IntersectionObserver((es,ob)=>{if(es.some(e=>e.isIntersecting)){ob.disconnect();go()}},{rootMargin:'0px 0px -40px 0px'});io.observe(f)}else go();
-  v.addEventListener('error',()=>{v.remove();f.classList.remove('real')});
+  v.addEventListener('error',()=>{curV=null;v.remove();f.classList.remove('real')});
 }
 const MQ=matchMedia('(max-width:860px)');
 const pickVideo=()=>(MQ.matches&&CFG.videoM)||CFG.video||VIDEO_SRC;
@@ -1020,9 +1036,10 @@ applyCfg();
 
 /* ===== pesanan ===== */
 async function saveOrder(){
-  if(!sb)return true;
+  if(!sb)return false;
   try{
-    const items=cart.map(c=>{const i=PM(c.id);return{id:String(c.id),n:i.n,z:c.z,q:c.q,p:i.p}});
+    const items=cart.map(c=>{const i=PM(c.id);return i?{id:String(c.id),n:i.n,z:c.z,q:c.q,p:i.p}:null}).filter(Boolean);
+    if(items.length!==cart.length)return false;
     const total=subtotal()-disc()+ship;
     const {error}=await sb.from('orders').insert({no:orderNo,items,total,info,ship,status:'baru',ts:Date.now()});
     if(error){console.error(error);return false}
@@ -1042,10 +1059,10 @@ function renderPG(){const g=$('#pgrid');if(!g)return;g.innerHTML=pgInner();const
 function formHTML(){
   const d=ED.data,btn='<div class="bar2"><button class="btn-d">Simpan</button><button type="button" class="btn-l" data-a="cancel">Batal</button></div>';
   if(ED.kind==='p')return `<form id="af"><h3 class="fh">${ED.isNew?'Produk baru':'Ubah produk'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,d.g)}${fs('Kategori','c',CATO,d.c)}${fs('Tipe barang','s',TIPE,d.s)}${fi('Ukuran (pisah koma, kosong = bawaan)','z',arr(d.z).join(', '))}${fi('Ukuran habis (pisah koma)','x',arr(d.x).join(', '))}<div>${fc('Tampil di Koleksi Baru','nw',d.nw)}${fc('Sembunyikan dari toko','hidden',d.hidden)}</div></div><label class="af">Deskripsi<textarea name="d">${esc(d.d||'')}</textarea></label>${photosHTML()}${btn}</form>`;
-  return `<form id="af"><h3 class="fh">${ED.isNew?'Barang arsip baru':'Ubah barang arsip'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',GEN,String(d.season||'').split(':')[0]||'pria')}${fs('Kategori','c',CATO,String(d.season||'').split(':')[1]||catOf(d.s))}${fs('Tipe barang','s',TIPE,d.s)}</div>${photosHTML()}${btn}</form>`;
+  return `<form id="af"><h3 class="fh">${ED.isNew?'Barang arsip baru':'Ubah barang arsip'}</h3><div class="afg">${fi('Nama','n',d.n)}${fi('Harga (Rp)','p',d.p,'number')}${fs('Untuk','g',String(d.season||'').includes(':')?GEN:[...GEN,['both','Pria dan Wanita (format lama)']],String(d.season||'').includes(':')?String(d.season||'').split(':')[0]:'both')}${fs('Kategori','c',CATO,String(d.season||'').split(':')[1]||catOf(d.s))}${fs('Tipe barang','s',TIPE,d.s)}</div>${photosHTML()}${btn}</form>`;
 }
-const row=(i,sub,acts)=>`<div class="ar2"><div class="t">${pic(i)}</div><div>${esc(i.n)}<small>${sub}</small></div><div class="ac">${acts}</div></div>`;
-const acts=i=>`<button data-a="edit" data-id="${i.id}">Ubah</button><button data-a="del" data-id="${i.id}">${CD===i.id?'Yakin hapus?':'Hapus'}</button>`;
+const row=(i,sub,acts)=>`<div class="ar2"><div class="t">${pic(i)}</div><div>${esc(i.n)}<small>${esc(sub)}</small></div><div class="ac">${acts}</div></div>`;
+const acts=i=>`<button data-a="edit" data-id="${esc(i.id)}">Ubah</button><button data-a="del" data-id="${esc(i.id)}">${CD===i.id?'Yakin hapus?':'Hapus'}</button>`;
 const archLabel=s=>{const [g,c]=String(s||'').split(':'),cn=(CATO.find(x=>x[0]===c)||[])[1];if(!c)return `Arsip ${s}`;return cn?`${g} · ${cn}`:`${g} · ${c}`};
 const daBtn=(k,n)=>n&&CA!==k?`<button class="btn-l danger" data-a="delask" data-k="${k}">Hapus semua</button>`:'';
 const daWarn=(k,n)=>n&&CA===k?`<div class="warn"><span>Hapus semua ${n} data ini? Tidak bisa dibatalkan.</span><button class="btn-d" data-a="delall" data-k="${k}">Ya, hapus semua</button><button class="btn-l" data-a="delno">Batal</button></div>`:'';
@@ -1084,6 +1101,7 @@ async function shrink(f,max){
     return t&&t.size<f.size?new File([t],f.name.replace(/\.\w+$/,'')+'.webp',{type:'image/webp'}):f;
   }catch(e){return f}
 }
+const delMedia=u=>{try{if(!u||typeof u!=='string')return;const m=u.match(/\/media\/(.+)$/);if(!m)return;sb.storage.from('media').remove([decodeURIComponent(m[1])]).catch(()=>{})}catch(e){}};
 const up=async f=>{if(f.type.startsWith('video/')&&f.size>50*1024*1024)throw new Error('Video maksimal 50 MB');f=await shrink(f,1600);const n=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error}=await sb.storage.from('media').upload(n,f,{contentType:f.type,cacheControl:'31536000'});if(error)throw error;return sb.storage.from('media').getPublicUrl(n).data.publicUrl};
 async function seed(kind){
   flash('Mengimpor…');
@@ -1099,14 +1117,14 @@ $('#admin').addEventListener('click',async e=>{
     if(a==='new'){PH=[];ED=isP?{kind:'p',isNew:1,id:'p'+Date.now().toString(36),data:{g:'pria',c:'rtw',s:'tee',p:0}}:{kind:'a',isNew:1,id:'a'+Date.now().toString(36),data:{season:'pria:rtw',s:'tee',p:0}};renderAdmin()}
     else if(a==='edit'){const src=(isP?ALL:ARC).find(x=>x.id===id);PH=imgList(src);ED={kind:isP?'p':'a',id,data:{...src}};renderAdmin()}
     else if(a==='cancel'){ED=null;renderAdmin()}
-    else if(a==='del'){if(CD!==id){CD=id;renderAdmin()}else{await ok(sb.from(isP?'products':'archive').delete().eq('id',id));CD='';await loadAll();flash('Dihapus')}}
+    else if(a==='del'){if(CD!==id){CD=id;renderAdmin()}else{const src=(isP?ALL:ARC).find(x=>x.id===id);if(src)imgList(src).forEach(delMedia);await ok(sb.from(isP?'products':'archive').delete().eq('id',id));CD='';await loadAll();flash('Dihapus')}}
     else if(a==='phmain'){const k=+t.dataset.k;PH.unshift(PH.splice(k,1)[0]);renderPG()}
-    else if(a==='phdel'){PH.splice(+t.dataset.k,1);renderPG()}
-    else if(a==='rcfg'){const c={...CFG};delete c[t.dataset.k];await setCfg(c);flash('Dikembalikan ke bawaan')}
+    else if(a==='phdel'){const u=PH.splice(+t.dataset.k,1)[0];delMedia(u);renderPG()}
+    else if(a==='rcfg'){const k=t.dataset.k;delMedia(CFG[k]);const c={...CFG};delete c[k];await setCfg(c);flash('Dikembalikan ke bawaan')}
     else if(a==='out'){await sb.auth.signOut();ED=null}
     else if(a==='delask'){CA=t.dataset.k;CD='';renderAdmin()}
     else if(a==='delno'){CA='';renderAdmin()}
-    else if(a==='delall'){const k=t.dataset.k;await ok(sb.from(k).delete().not('id','is',null));CA='';await loadAll();flash('Semua data dihapus')}
+    else if(a==='delall'){const k=t.dataset.k;try{await sb.from('audit_log').insert({action:'hapus_semua',target:k})}catch(err){}await ok(sb.from(k).delete().not('id','is',null));CA='';await loadAll();flash('Semua data dihapus')}
     else if(a==='seed')await seed('p');
     else if(a==='seedA')await seed('a');
   }catch(err){flash('Gagal: '+(err.message||err.code||err))}
@@ -1130,7 +1148,9 @@ $('#admin').addEventListener('submit',async e=>{
   if(e.target.id==='lg'){const g=new FormData(e.target);const {error}=await sb.auth.signInWithPassword({email:g.get('email'),password:g.get('password')});LERR=error?'Surel atau kata sandi salah.':'';renderAdmin();return}
   const f=new FormData(e.target),p=ED.kind==='p';
   const base={n:String(f.get('n')||'').trim(),p:Math.max(0,+f.get('p')||0),s:f.get('s'),img:PH.length>1?JSON.stringify(PH):(PH[0]||'')};
-  const data=p?{...base,g:f.get('g'),c:f.get('c'),nw:!!f.get('nw'),hidden:!!f.get('hidden'),d:String(f.get('d')||'').trim(),z:csv(f.get('z')),x:csv(f.get('x'))}:{...base,season:f.get('g')+':'+f.get('c')};
+  const data=p?{...base,g:f.get('g'),c:f.get('c'),nw:!!f.get('nw'),hidden:!!f.get('hidden'),d:String(f.get('d')||'').trim(),z:csv(f.get('z')),x:csv(f.get('x'))}:{...base,season:(f.get('g')==='both'&&ED.data.season)?ED.data.season:f.get('g')+':'+f.get('c')};
+  if(!data.n){e.target.querySelector('.flash')?.remove();const m=document.createElement('p');m.className='flash';m.textContent='Nama produk wajib diisi.';e.target.prepend(m);return}
+  if(!(data.p>0)){e.target.querySelector('.flash')?.remove();const m=document.createElement('p');m.className='flash';m.textContent='Harga harus lebih dari Rp 0.';e.target.prepend(m);return}
   try{await ok(sb.from(p?'products':'archive').upsert({id:ED.id,...data}));ED=null;await loadAll();flash('Tersimpan')}catch(err){flash('Gagal menyimpan: '+(err.message||err.code||err))}
 });
 const csv=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
@@ -1145,12 +1165,16 @@ const CF=window.X_CONFIG||{};
 const sb=(window.supabase&&CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY)?supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY):null;
 if(sb){ITEMS=[];ARCHDB=[];LOADED=false}
 async function setCfg(c){await ok(sb.from('site').upsert({id:'config',data:c}));await loadAll()}
+let loadSeq=0;
 async function loadAll(){
   if(!sb)return;
+  const mySeq=++loadSeq;
   try{
     const [p,a,c]=await Promise.all([sb.from('products').select('*').order('created_at'),sb.from('archive').select('*').order('created_at'),sb.from('site').select('data').eq('id','config').maybeSingle()]);
+    if(mySeq!==loadSeq)return;
     if(!p.error){ALL=p.data;ITEMS=ALL.filter(x=>!x.hidden);if(!ITEMS.length)ITEMS=DEF;else if(!ITEMS.some(x=>x.g==='wanita'))ITEMS=ITEMS.concat(DEF.filter(x=>x.g==='wanita'))}else ITEMS=DEF
-    if(!a.error){ARC=a.data;ARCHDB=ARC}else ARCHDB=null
+    SAMPLE=ITEMS.some(x=>typeof x.id==='number');
+    if(!a.error){ARC=a.data;ARCHDB=ARC.length?ARC:null}else ARCHDB=null
     if(!c.error){CFG=(c.data&&c.data.data)||{};try{localStorage.setItem('x_cfg',JSON.stringify(CFG))}catch(e){}}
     if(CAN){const o=await sb.from('orders').select('*').order('ts',{ascending:false});if(!o.error)ORDERS=o.data}
   }catch(e){if(!ITEMS.length)ITEMS=DEF;if(ARCHDB&&!ARCHDB.length)ARCHDB=null}
@@ -1158,19 +1182,20 @@ async function loadAll(){
   if(!$('#checkout').hidden)renderCo();
 }
 if(sb){
-  sb.auth.getSession().then(({data})=>{CAN=!!data.session;loadAll()});
+  sb.auth.getSession().then(({data})=>{CAN=!!data.session;loadAll()}).catch(()=>{CAN=false;loadAll()});
   sb.auth.onAuthStateChange((_e,x)=>{const was=CAN;CAN=!!x;if(was!==CAN)loadAll()});
 }
+if(!sb)drawCart(false);
 
 /* ===== cookie ===== */
 (function(){
   const ck=$('#cookie');if(!ck)return;
   let ok=false;try{ok=localStorage.getItem('x_cookie')==='1'}catch(e){}
   if(ok){ck.remove();return}
-  setTimeout(()=>ck.classList.add('on'),1000);
+  setTimeout(()=>{ck.classList.add('on');document.body.classList.add('has-cookie')},1000);
   $('#cookieOk').onclick=()=>{
     try{localStorage.setItem('x_cookie','1')}catch(e){}
-    ck.classList.remove('on');
+    ck.classList.remove('on');document.body.classList.remove('has-cookie');
     setTimeout(()=>ck.remove(),400);
   };
 })();
