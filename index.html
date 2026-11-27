@@ -642,7 +642,7 @@ const AN={coat:['Jaket Kulit Klasik','Mantel Wol Lama'],tee:['Kaos Grafis Lama',
 const CSH={rtw:['coat','tee','hood','pants'],sepatu:['shoe'],tas:['bag'],aksesoris:['acc'],perhiasan:['gem']};
 const dflt=(g,c)=>CSH[c].flatMap((s,j)=>AN[s].map((n,m)=>({n,s,p:350000+((j*5+m*3+(g==='pria'?0:2))%9)*325000})));
 const catOf=t=>Object.keys(CSH).find(c=>CSH[c].includes(t))||'rtw';
-const archItems=(g,c)=>ARCHDB?ARCHDB.filter(a=>a.season===g+':'+c||(!String(a.season).includes(':')&&catOf(a.s)===c)):dflt(g,c);
+const archItems=(g,c)=>ARCHDB?ARCHDB.filter(a=>a.season===g+':'+c||(!String(a.season).includes(':')&&g==='pria'&&catOf(a.s)===c)):dflt(g,c);
 
 /* ===== reveal on scroll ===== */
 let rvObs=null;
@@ -805,7 +805,9 @@ $('#shop').onclick=e=>{
 let pI=null,selZ=null;
 function renderPdp(i){
   const keepSel=(pI&&String(pI.id)===String(i.id))?selZ:null;
-  pI=i;const zs=SZ(i);selZ=(keepSel&&zs.includes(keepSel)&&!sold(i,zs.indexOf(keepSel)))?keepSel:zs.find((z,k)=>!sold(i,k));
+  pI=i;const zs=SZ(i);
+  let savedSz=null;try{savedSz=localStorage.getItem('x_sz_'+i.id)}catch(e){}
+  selZ=(keepSel&&zs.includes(keepSel)&&!sold(i,zs.indexOf(keepSel)))?keepSel:(savedSz&&zs.includes(savedSz)&&!sold(i,zs.indexOf(savedSz)))?savedSz:zs.find((z,k)=>!sold(i,k));
   const rel=[...new Map(ITEMS.filter(x=>x.g===i.g&&x.id!==i.id).sort((a,b)=>{const n=ITEMS.length,x=ITEMS.indexOf(i);return((ITEMS.indexOf(a)-x+n)%n)-((ITEMS.indexOf(b)-x+n)%n)}).map(x=>[x.n.toLowerCase(),x])).values()].slice(0,8); // terkait: satu kartu per nama produk
   $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s]||'Produk Héritiers du Vide. Dibuat di Indonesia.')}</p></div><div class="m">${galHTML(i)}</div>
   <div class="r"><div class="sz" id="sz">${zs.map((z,k)=>`<button ${sold(i,k)?'disabled':''} aria-pressed="${z===selZ}">${z}</button>`).join('')}</div><button class="btn-d" id="add"${selZ?'':' disabled'}>${selZ?`Tambah ke keranjang — ${R(i.p)}`:'Habis'}</button></div></div>
@@ -840,7 +842,7 @@ $('#pdp').onclick=e=>{
     }
   }
   const z=e.target.closest('#sz button');
-  if(z&&!z.disabled){selZ=z.textContent;document.querySelectorAll('#sz button').forEach(b=>b.setAttribute('aria-pressed',b===z))}
+  if(z&&!z.disabled){selZ=z.textContent;try{localStorage.setItem('x_sz_'+pI.id,selZ)}catch(e){}document.querySelectorAll('#sz button').forEach(b=>b.setAttribute('aria-pressed',b===z))}
   const addBtn=e.target.closest('#add');
   if(addBtn&&selZ){
     const f=cart.find(c=>String(c.id)===String(pI.id)&&String(c.z)===String(selZ));
@@ -1016,14 +1018,17 @@ function setVideo(src){
   f.classList.remove('real');
   if(!src)return;
   const v=document.createElement('video');
-  v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.controls=true;
-  v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-label','Video koleksi');
-  v.preload='metadata';
+  v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;
+  v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');
+  v.setAttribute('disablepictureinpicture','');
+  v.preload='auto';
   f.append(v);
   v.addEventListener('loadeddata',()=>{f.classList.add('real');v.classList.add('on')});
-  const go=()=>{v.src=src;const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})};
+  let tries=0;
+  const go=()=>{v.src=src;v.load();const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})};
+  v.addEventListener('canplay',()=>{const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})});
   if('IntersectionObserver' in window){const io=new IntersectionObserver((es,ob)=>{if(es.some(e=>e.isIntersecting)){ob.disconnect();go()}},{rootMargin:'0px 0px -40px 0px'});io.observe(f)}else go();
-  v.addEventListener('error',()=>{curV=null;v.remove();f.classList.remove('real')});
+  v.addEventListener('error',()=>{if(tries<3){tries++;setTimeout(()=>{v.removeAttribute('src');v.load();go()},1200*tries)}else{curV=null;v.remove();f.classList.remove('real')}});
 }
 const MQ=matchMedia('(max-width:860px)');
 const pickVideo=()=>(MQ.matches&&CFG.videoM)||CFG.video||VIDEO_SRC;
@@ -1181,6 +1186,7 @@ async function loadAll(){
   LOADED=true;CFGOK=true;applyCfg();refresh();
   if(!$('#checkout').hidden)renderCo();
 }
+try{$('#cn').textContent=cart.reduce((a,c)=>a+c.q,0);$('#dsum').textContent=R(subtotal())}catch(e){}
 if(sb){
   sb.auth.getSession().then(({data})=>{CAN=!!data.session;loadAll()}).catch(()=>{CAN=false;loadAll()});
   sb.auth.onAuthStateChange((_e,x)=>{const was=CAN;CAN=!!x;if(was!==CAN)loadAll()});
