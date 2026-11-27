@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Héritiers du Vide</title>
 <meta name="description" content="Héritiers du Vide — pakaian, alas kaki, tas, aksesori, dan perhiasan.">
+<meta property="og:title" content="Héritiers du Vide">
+<meta property="og:description" content="Héritiers du Vide — pakaian, alas kaki, tas, aksesori, dan perhiasan.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://x-brand-rho.vercel.app/">
+<meta property="og:image" content="https://luvmqahvvlkrrlromxnl.supabase.co/storage/v1/object/public/media/1792365496325-_Pngtree_black_t_shirt_mockup_hanging_13020093.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80' font-family='Times New Roman'>H</text></svg>">
 <script src="config.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
@@ -107,7 +113,7 @@ body.light .hn-menu{background:#fff;}
 
 /* ===== konten ===== */
 .duo{display:grid;grid-template-columns:1fr 1fr;height:100vh;min-height:560px;background:#000}
-.pane{position:relative;isolation:isolate;display:flex;justify-content:space-between;align-items:flex-end;padding:22px;color:#fff;overflow:hidden;background:#000}
+.pane{position:relative;isolation:isolate;display:flex;justify-content:space-between;align-items:flex-end;padding:22px;color:#fff;overflow:hidden;background:linear-gradient(160deg,#181c22,#07090d)}
 .pane::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#000b 0,#0000 30%),linear-gradient(0deg,#000c 0,#0000 38%),#0003}
 .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transform-origin:var(--o,50% 40%);animation:kb 20s ease-in-out infinite alternate;transition:filter .6s}
 @keyframes kb{to{transform:scale(1.12) translate(-1.5%,1%)}}
@@ -332,6 +338,7 @@ main.page.out{animation:pgOut .2s ease both}
 .cookie a{text-decoration:underline;font-weight:600}
 .cookie button{background:#111;color:#fff;padding:10px 18px;border-radius:6px;font:600 14px Arial,sans-serif;text-transform:none;letter-spacing:0;flex-shrink:0}
 .cookie button:hover{opacity:.85}
+body:has(.cookie.on){padding-bottom:104px}
 
 @media (max-width:1100px){.pd{gap:12px}.pd .l{padding:0 8px}}
 @media (max-width:860px){
@@ -534,7 +541,7 @@ html,body{max-width:100%;overflow-x:hidden}
   </div>
 </main>
 
-<footer><span>Héritiers du Vide © 2026</span><a href="#/legal">Legal</a></footer>
+<footer><span>Héritiers du Vide © 2026</span><a href="#/pria">Pria</a><a href="#/wanita">Wanita</a><a href="#/kronologi">Kronologi</a><a href="mailto:halo@heritiersduvide.id">halo@heritiersduvide.id</a><a href="#/legal">Legal</a><span>Pembayaran &amp; pengiriman dikonfirmasi manual.</span></footer>
 
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-label="Keranjang" aria-hidden="true">
@@ -551,7 +558,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
 
-const VIDEO_SRC="media/video.mp4";
+const VIDEO_SRC="https://luvmqahvvlkrrlromxnl.supabase.co/storage/v1/object/public/media/1792847313631-465837.mp4";
 const $=s=>document.querySelector(s),R=n=>'Rp '+n.toLocaleString('id-ID');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const RM=matchMedia('(prefers-reduced-motion: reduce)');
@@ -626,7 +633,7 @@ const arr=v=>{
   return [];
 };
 const SZ=i=>{const z=arr(i.z);return z.length?z:i.s==='shoe'?['39','40','41','42','43','44']:['tee','hood','pants','coat'].includes(i.s)?['XS','S','M','L','XL','2XL']:['Satu ukuran']};
-const sold=(i,k)=>{const zs=SZ(i),xs=arr(i.x);return xs.length?xs.includes(zs[k]):zs.length>1&&(hs(i.id)+k)%3===0};
+const sold=(i,k)=>{const zs=SZ(i),xs=arr(i.x);return xs.length?xs.includes(zs[k]):false};
 const card=(i,k=0)=>`<a class="pcard rv" style="transition-delay:${Math.min(k,12)*40}ms" href="#/p/${i.id}"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small></a>`;
 const AN={coat:['Jaket Kulit Klasik','Mantel Wol Lama'],tee:['Kaos Grafis Lama','Kaos Lengan Panjang'],hood:['Hoodie Zip Lama','Hoodie Bordir'],pants:['Celana Denim Robek','Celana Lipit Wol'],shoe:['Bot Kerja Kulit','Sepatu Loafer'],bag:['Tas Pos Kulit','Tas Punggung Kanvas'],acc:['Topi Bulu Pemburu','Ikat Pinggang Paku'],gem:['Kalung Elang Perak','Anting Salib Perak']};
 const CSH={rtw:['coat','tee','hood','pants'],sepatu:['shoe'],tas:['bag'],aksesoris:['acc'],perhiasan:['gem']};
@@ -770,18 +777,22 @@ $('#ditems').onclick=e=>{
 };
 
 /* ===== daftar produk ===== */
-let curG='pria',curC='baru',sortBy='new',fopen=false;
+let curG='pria',curC='baru',sortBy='new',fopen=false,q='';
 function skHTML(){return `<div class="grid3 sk">${Array.from({length:6}).map(()=>`<div class="pcard"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line s"></div></div>`).join('')}</div>`}
 function renderShop(){
   if(!LOADED){$('#shop').innerHTML=`<div class="title"><h1>Memuat…</h1></div>${skHTML()}`;return}
   let L=ITEMS.filter(i=>i.g===curG&&(curC==='baru'?i.nw:i.c===curC));
+  if(q)L=L.filter(i=>i.n.toLowerCase().includes(q.toLowerCase()));
   if(sortBy==='lo')L=[...L].sort((a,b)=>a.p-b.p);if(sortBy==='hi')L=[...L].sort((a,b)=>b.p-a.p);
   const opt=[['new','Terbaru'],['lo','Harga terendah'],['hi','Harga tertinggi']];
-  $('#shop').innerHTML=`<div class="title"><h1>${curG==='pria'?'Pria':'Wanita'} &gt; ${CATS.find(x=>x[0]===curC)[1]}</h1><button class="btn-d" id="fb" aria-expanded="${fopen}">Filter</button></div>
+  $('#shop').innerHTML=`<div class="title"><h1>${curG==='pria'?'Pria':'Wanita'} &gt; ${CATS.find(x=>x[0]===curC)[1]}</h1><input id="sq" type="search" placeholder="Cari produk…" value="${esc(q)}" aria-label="Cari produk" style="height:36px;border:1px solid var(--line);border-radius:4px;padding:0 10px;background:var(--bg);color:var(--fg);font:400 15px Arial,sans-serif;text-transform:none;letter-spacing:0"><button class="btn-d" id="fb" aria-expanded="${fopen}">Filter</button></div>
   <div class="filters"${fopen?'':' hidden'}>${opt.map(([k,l])=>`<button data-sort="${k}" aria-pressed="${sortBy===k}">${l}</button>`).join('')}</div>
-  <div class="grid3">${L.map(card).join('')}</div>${L.length?'':'<p class="note">Belum ada produk di kategori ini.</p>'}`;
+  <div class="grid3">${L.map(card).join('')}</div>${L.length?'':'<p class="note">Belum ada produk di kategori ini. <a href="#/pria" style="text-decoration:underline">Lihat koleksi Pria →</a></p>'}`;
   initReveal();
 }
+$('#shop').addEventListener('input',e=>{
+  if(e.target.id==='sq'){q=e.target.value;const pos=e.target.selectionStart;renderShop();const nq=$('#sq');if(nq){nq.focus();nq.setSelectionRange(pos,pos)}}
+});
 $('#shop').onclick=e=>{
   if(e.target.closest('#fb')){fopen=!fopen;renderShop()}
   const s=e.target.closest('[data-sort]');if(s){sortBy=s.dataset.sort;renderShop()}
@@ -846,7 +857,7 @@ function renderKr(g){
   const head=`<div class="title"><h1>Kronologi &gt; ${g==='pria'?'Pria':'Wanita'}</h1></div><nav class="krt">${GEN.map(([k,l])=>`<a href="#/kronologi/${k}"${k===g?' aria-current="page"':''}>${l}</a>`).join('')}</nav>`;
   if(!rows.length){$('#kr').innerHTML=head+'<p class="note">Belum ada barang di arsip.</p>';return}
   const tile=i=>`<div class="ar"><div class="pimg">${pic(i)}</div><b>${esc(i.n)}</b><small>${R(i.p)}</small><em>Habis terjual</em></div>`;
-  const row=({l,L})=>{let b=L;while(b.length<6)b=b.concat(L);const t=b.map(tile).join('');return `<h2 class="krh">${l}</h2><div class="car" aria-label="Arsip ${l}"><div class="track" style="--d:${b.length*4}s">${t}${t}</div></div>`};
+  const row=({l,L})=>{const t=L.map(tile).join('');return `<h2 class="krh">${l}</h2><div class="car" aria-label="Arsip ${l}"><div class="track" style="--d:${Math.max(L.length*4,20)}s">${t}${t}</div></div>`};
   $('#kr').innerHTML=head+rows.map(row).join('');
 }
 
@@ -856,12 +867,11 @@ let lastStepRendered=null;
 const SH=[['Reguler (3–5 hari kerja)',25000],['Ekspres (1–2 hari kerja)',60000]];
 const PAY=['Transfer bank / virtual account','QRIS','Kartu kredit atau debit'];
 const PROV=['Aceh','Sumatera Utara','Sumatera Barat','Riau','Kepulauan Riau','Jambi','Bangka Belitung','Bengkulu','Sumatera Selatan','Lampung','DKI Jakarta','Jawa Barat','Banten','Jawa Tengah','DI Yogyakarta','Jawa Timur','Bali','Nusa Tenggara Barat','Nusa Tenggara Timur','Kalimantan Barat','Kalimantan Tengah','Kalimantan Selatan','Kalimantan Timur','Kalimantan Utara','Sulawesi Utara','Gorontalo','Sulawesi Tengah','Sulawesi Barat','Sulawesi Selatan','Sulawesi Tenggara','Maluku','Maluku Utara','Papua','Papua Barat','Papua Barat Daya','Papua Tengah','Papua Pegunungan','Papua Selatan'];
-const disc=()=>code==='X10'?Math.round(subtotal()*.1):0;
+const disc=()=>0;
 function sumHTML(){
   if(step===4)return '';
   const sub=subtotal(),d=disc(),sc=step>=2?ship:null,tot=sub-d+(sc||0);
   return `${cart.map(c=>{const i=PM(c.id);if(!i)return'';return `<div class="sl"><div class="th">${pic(i)}<i>${c.q}</i></div><div>${esc(i.n)}<small>${c.z}</small></div><span>${R(i.p*c.q)}</span></div>`}).join('')}
-  <div class="dcode"><input id="dc" placeholder="Kode diskon" value="${esc(code)}" aria-label="Kode diskon"><button id="da" type="button">Pakai</button></div><p class="dm">${dmsg}</p>
   <div class="tr"><span>Subtotal</span><span>${R(sub)}</span></div>
   ${d?`<div class="tr"><span>Diskon</span><span>−${R(d)}</span></div>`:''}
   <div class="tr"><span>Pengiriman</span><span>${sc===null?'Dihitung di langkah berikutnya':R(sc)}</span></div>
@@ -870,11 +880,11 @@ function sumHTML(){
 function leftHTML(){
   const bc=['Informasi','Pengiriman','Pembayaran'].map((l,k)=>step>k+1&&step<4?`<button data-s="${k+1}">${l}</button>`:`<span class="${step===k+1?'cu':''}">${l}</span>`).join('<span>›</span>');
   const head='';
-  if(step===4)return `${head}<div class="ok"><h2>Pesanan diterima</h2><p>Nomor pesanan ${esc(orderNo)}. Konfirmasi dikirim ke ${esc(info.email||'surel Anda')}.</p><p style="margin-top:24px"><a class="btn-d" href="#/">Kembali ke toko</a></p></div>`;
+  if(step===4)return `${head}<div class="ok"><h2>Pesanan diterima</h2><p>Nomor pesanan ${esc(orderNo)}. Konfirmasi dikirim ke ${esc(info.email||'surel Anda')}.</p><p style="margin-top:12px">Belum ada pembayaran yang diproses. Kami akan menghubungi Anda untuk konfirmasi pembayaran sebelum pesanan diproses.</p><p style="margin-top:24px"><a class="btn-d" href="#/">Kembali ke toko</a></p></div>`;
   if(!cart.length)return `${head}<p>Keranjang Anda kosong.</p><p style="margin-top:20px"><a class="btn-d" href="#/pria">Lanjut belanja</a></p>`;
   const adr=`${esc(info.address||'')}, ${esc(info.city||'')} ${esc(info.zip||'')}`;
   const top=`${head}<nav class="bc">${bc}</nav>`;
-  if(step===1)return `${top}<div class="ex">Checkout cepat</div><div class="exb"><span style="background:#5a31f4">shop</span><span style="background:#ffc439;color:#253b80">PayPal</span><span style="background:#000">Apple Pay</span><span style="background:#000">G Pay</span></div><div class="or">ATAU</div>
+  if(step===1)return `${top}<p class="ex">Pesanan dicatat dulu — pembayaran dikonfirmasi manual. Belum ada pembayaran online.</p>
   <form id="f1"><h3>Kontak</h3><input type="email" name="email" placeholder="Surel" required value="${esc(info.email||'')}"><label class="chk"><input type="checkbox" name="news"${info.news?' checked':''}> Kirimi saya berita dan penawaran</label>
   <h3>Alamat pengiriman</h3><select name="country" aria-label="Negara"><option${!info.country||info.country==='Indonesia'?' selected':''}>Indonesia</option><option${info.country==='Singapura'?' selected':''}>Singapura</option><option${info.country==='Malaysia'?' selected':''}>Malaysia</option></select>
   <div class="row"><input name="fn" placeholder="Nama depan (opsional)" value="${esc(info.fn||'')}"><input name="ln" placeholder="Nama belakang" required value="${esc(info.ln||'')}"></div>
@@ -883,7 +893,7 @@ function leftHTML(){
   <input name="phone" type="tel" placeholder="Telepon" value="${esc(info.phone||'')}"><div class="cfoot"><button class="cbtn">Lanjut ke pengiriman</button></div></form>`;
   const rows=`<div class="box"><div><span>Kontak</span><span>${esc(info.email||'')}</span></div><div><span>Kirim ke</span><span>${adr}</span></div></div>`;
   if(step===2)return `${top}${rows}<form id="f2"><h3>Metode pengiriman</h3>${SH.map(([l,c])=>`<label class="opt"><input type="radio" name="ship" value="${c}" ${c===ship?'checked':''}><span>${l}</span><span>${R(c)}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Lanjut ke pembayaran</button></div></form>`;
-  return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3>${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" value="${esc(l)}" ${k?'':'checked'}><span>${l}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Bayar sekarang</button></div></form>`;
+  return `${top}${rows}${payErr?`<p class="flash" role="alert">${esc(payErr)}</p>`:''}<form id="f3"><h3>Pembayaran</h3><p class="note" style="margin:0 0 14px">Belum ada pembayaran online. Pilih metode yang Anda inginkan — kami akan menghubungi Anda untuk konfirmasi pembayaran sebelum pesanan diproses.</p>${PAY.map((l,k)=>`<label class="opt"><input type="radio" name="pay" value="${esc(l)}" ${k?'':'checked'}><span>${l}</span></label>`).join('')}<div class="cfoot"><button class="cbtn">Buat pesanan</button></div></form>`;
 }
 function renderCo(){
   if(!LOADED){$('#checkout').innerHTML='<div class="cl"><div class="ci">Memuat…</div></div>';return}
@@ -925,7 +935,6 @@ $('#checkout').addEventListener('change',e=>{
 });
 $('#checkout').addEventListener('click',e=>{
   const s=e.target.closest('[data-s]');if(s){step=+s.dataset.s;payErr='';renderCo();scrollTo(0,0);return}
-  if(e.target.id==='da'){code=$('#dc').value.trim().toUpperCase();dmsg=code?(code==='X10'?'Diskon 10% diterapkan.':'Kode tidak valid.'):'';$('#cright').innerHTML=sumHTML()}
 });
 
 /* ===== indikator halaman aktif di panel ===== */
@@ -984,16 +993,16 @@ addEventListener('hashchange',()=>route());drawCart(false);
 initReveal();
 
 /* ===== video & tampilan ===== */
-const D0M='media/hero-pria.jpg',D0W='media/hero-wanita.jpg';let curV=null,CFGOK=false;
+const D0M='https://luvmqahvvlkrrlromxnl.supabase.co/storage/v1/object/public/media/1792365496325-_Pngtree_black_t_shirt_mockup_hanging_13020093.png',D0W='https://luvmqahvvlkrrlromxnl.supabase.co/storage/v1/object/public/media/1792365511831-_Pngtree_white_t_shirt_mockup_realistic_13020297.png';let curV=null,CFGOK=false;
 function setVideo(src){
   if(src===curV)return;curV=src;
   const f=$('#film'),o=f.querySelector('video');if(o)o.remove();
   f.classList.remove('real');
   if(!src)return;
   const v=document.createElement('video');
-  v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;
+  v.className='vid';v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.controls=true;
   v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');
-  v.preload='none';
+  v.preload='metadata';
   f.append(v);
   v.addEventListener('loadeddata',()=>{f.classList.add('real');v.classList.add('on')});
   const go=()=>{v.src=src;const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})};
@@ -1037,7 +1046,7 @@ function formHTML(){
 }
 const row=(i,sub,acts)=>`<div class="ar2"><div class="t">${pic(i)}</div><div>${esc(i.n)}<small>${sub}</small></div><div class="ac">${acts}</div></div>`;
 const acts=i=>`<button data-a="edit" data-id="${i.id}">Ubah</button><button data-a="del" data-id="${i.id}">${CD===i.id?'Yakin hapus?':'Hapus'}</button>`;
-const archLabel=s=>{const [g,c]=String(s||'').split(':'),cn=(CATO.find(x=>x[0]===c)||[])[1];return cn?`${g} · ${cn}`:'format lama · tampil di Pria dan Wanita (ubah untuk memilih)'};
+const archLabel=s=>{const [g,c]=String(s||'').split(':'),cn=(CATO.find(x=>x[0]===c)||[])[1];if(!c)return `Arsip ${s}`;return cn?`${g} · ${cn}`:`${g} · ${c}`};
 const daBtn=(k,n)=>n&&CA!==k?`<button class="btn-l danger" data-a="delask" data-k="${k}">Hapus semua</button>`:'';
 const daWarn=(k,n)=>n&&CA===k?`<div class="warn"><span>Hapus semua ${n} data ini? Tidak bisa dibatalkan.</span><button class="btn-d" data-a="delall" data-k="${k}">Ya, hapus semua</button><button class="btn-l" data-a="delno">Batal</button></div>`:'';
 function listP(){
@@ -1140,7 +1149,7 @@ async function loadAll(){
   if(!sb)return;
   try{
     const [p,a,c]=await Promise.all([sb.from('products').select('*').order('created_at'),sb.from('archive').select('*').order('created_at'),sb.from('site').select('data').eq('id','config').maybeSingle()]);
-    if(!p.error){ALL=p.data;ITEMS=ALL.filter(x=>!x.hidden)}else ITEMS=DEF
+    if(!p.error){ALL=p.data;ITEMS=ALL.filter(x=>!x.hidden);if(!ITEMS.length)ITEMS=DEF;else if(!ITEMS.some(x=>x.g==='wanita'))ITEMS=ITEMS.concat(DEF.filter(x=>x.g==='wanita'))}else ITEMS=DEF
     if(!a.error){ARC=a.data;ARCHDB=ARC}else ARCHDB=null
     if(!c.error){CFG=(c.data&&c.data.data)||{};try{localStorage.setItem('x_cfg',JSON.stringify(CFG))}catch(e){}}
     if(CAN){const o=await sb.from('orders').select('*').order('ts',{ascending:false});if(!o.error)ORDERS=o.data}
