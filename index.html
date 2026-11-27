@@ -802,7 +802,7 @@ $('#shop').onclick=e=>{
 let pI=null,selZ=null;
 function renderPdp(i){
   pI=i;const zs=SZ(i);selZ=zs.find((z,k)=>!sold(i,k));
-  const rel=ITEMS.filter(x=>x.g===i.g&&x.id!==i.id).sort((a,b)=>{const n=ITEMS.length,x=ITEMS.indexOf(i);return((ITEMS.indexOf(a)-x+n)%n)-((ITEMS.indexOf(b)-x+n)%n)}).slice(0,8);
+  const rel=[...new Map(ITEMS.filter(x=>x.g===i.g&&x.id!==i.id).sort((a,b)=>{const n=ITEMS.length,x=ITEMS.indexOf(i);return((ITEMS.indexOf(a)-x+n)%n)-((ITEMS.indexOf(b)-x+n)%n)}).map(x=>[x.n.toLowerCase(),x])).values()].slice(0,8); // terkait: satu kartu per nama produk
   $('#pdp').innerHTML=`<div class="pd"><div class="l"><h1>${esc(i.n)}</h1><p class="d">${esc(i.d||DS[i.s])}</p></div><div class="m">${galHTML(i)}</div>
   <div class="r"><div class="sz" id="sz">${zs.map((z,k)=>`<button ${sold(i,k)?'disabled':''} aria-pressed="${z===selZ}">${z}</button>`).join('')}</div><button class="btn-d" id="add"${selZ?'':' disabled'}>${selZ?`Tambah ke keranjang — ${R(i.p)}`:'Habis'}</button></div></div>
   <h2 class="rh rv">Terkait</h2>${rel.length?`<div class="car rv" aria-label="Produk terkait"><div class="track" style="--d:${Math.max(rel.length*4, 20)}s">${(function(){let rL=rel;while(rL.length<6)rL=rL.concat(rel);const rt=rL.map(x=>`<a class="pcard relcard" href="#/p/${x.id}"><div class="pimg">${pic(x)}</div><b>${esc(x.n)}</b><small>${R(x.p)}</small></a>`).join('');return rt+rt})()}</div></div>`:'<p class="note">Belum ada produk terkait.</p>'}`;
