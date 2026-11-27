@@ -20,7 +20,7 @@ Pembayaran belum ada (checkout masih simulasi).
 
 ## 2. Unggah ke GitHub
 1. Buat repository baru di github.com.
-2. **Add file → Upload files**, seret semua isi folder ini (termasuk folder `media`), lalu **Commit changes**.
+2. **Add file → Upload files**, seret semua isi folder ini, lalu **Commit changes**. (Tidak ada folder `media` di repo ini — foto hero dan video diatur lewat dashboard Supabase di menu Tampilan.)
 
 ## 3. Pasang di Vercel
 1. Di vercel.com klik **Add New → Project → Import** repository tadi.
@@ -41,3 +41,13 @@ Buka `alamat-situs/admin` (tidak ada tautannya di toko, hanya Anda yang tahu), l
 - Foto hero bawaan adalah karya seniman lain. Pastikan Anda punya izin memakainya, atau ganti lewat dashboard.
 - Sebelum `config.js` diisi, toko tetap tampil dengan produk contoh, tetapi dashboard belum bisa dipakai.
 - Pembayaran: belum ada. Saat siap, tambahkan Midtrans atau Xendit lewat fungsi server di Vercel (`/api`).
+- Foto hero bawaan adalah mockup kaos dari Pngtree. Pastikan Anda punya izin memakainya, atau ganti lewat dashboard.
+
+## Perubahan 27 Nov 2026
+- Halaman Wanita tidak lagi kosong: kalau Supabase belum punya produk wanita, katalog contoh wanita ikut tampil.
+- Kronologi tidak lagi menggandakan item sampai 12x; tiap barang arsip tampil 1x per putaran carousel.
+- Ukuran "habis" kini hanya dari data stok admin, bukan rumus acak.
+- Kode diskon `X10` dihapus; kolom diskon di checkout dihapus.
+- Tombol pembayaran cepat (Shop Pay/PayPal/Apple Pay/G Pay) yang tidak berfungsi dihapus; checkout kini jelas menyatakan pesanan dicatat dulu dan pembayaran dikonfirmasi manual, tombolnya "Buat pesanan".
+- Video koleksi kini ada kontrolnya; fallback hero/video tidak lagi menunjuk file `media/` yang tidak ada di repo.
+- Pencarian produk ditambahkan di halaman toko; footer dilengkapi tautan navigasi + surel; ditambahkan meta Open Graph; banner cookie tidak lagi menutupi footer.
