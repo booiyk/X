@@ -35,7 +35,7 @@ Buka `alamat-situs/admin` (tidak ada tautannya di toko, hanya Anda yang tahu), l
 - **Pesanan**: lihat pesanan masuk dan ubah statusnya.
 
 ## Catatan
-- Ukuran file maksimal di Supabase gratis 50 MB. Untuk video, pakai mp4 sekitar 5–15 detik dan di bawah 20 MB. Foto sebaiknya di bawah 500 KB.
+- Ukuran file maksimal di Supabase gratis 50 MB. Untuk video, pakai mp4 sekitar 5–15 detik dan di bawah 50 MB. Foto sebaiknya di bawah 500 KB.
 - Kunci `anon` boleh publik. **Jangan** pernah menaruh kunci `service_role` di file mana pun.
 - Alamat pembeli tersimpan di tabel `orders` dan hanya bisa dibaca admin.
 - Foto hero bawaan adalah karya seniman lain. Pastikan Anda punya izin memakainya, atau ganti lewat dashboard.
@@ -44,14 +44,14 @@ Buka `alamat-situs/admin` (tidak ada tautannya di toko, hanya Anda yang tahu), l
 - Foto hero bawaan adalah mockup kaos dari Pngtree. Pastikan Anda punya izin memakainya, atau ganti lewat dashboard.
 
 ## Menerapkan perbaikan keamanan (wajib, sekali saja)
-Perbaikan bug 27 Nov 2026 mengubah `supabase.sql`. **Database live belum berubah** sampai langkah ini dilakukan — file di repo saja tidak cukup:
+Perbaikan bug 27–28 Nov 2026 mengubah `supabase.sql`. **Database live belum berubah** sampai langkah ini dilakukan — file di repo saja tidak cukup:
 1. Buka `supabase.sql`, ganti `halo@heritiersduvide.id` di fungsi `is_admin()` dengan **surel login admin Supabase Anda** (akun dari langkah 1.3).
 2. Buka **SQL Editor → New query**, tempel seluruh isi `supabase.sql`, klik **Run**.
 3. Uji: masuk dashboard admin, ubah satu produk dan simpan. Kalau gagal menyimpan, surel di langkah 1 salah — ulangi dengan surel yang benar.
 4. Aktifkan MFA untuk akun admin: **Authentication → Users → akun admin → Factors**.
 5. Jangan hidupkan lagi "Allow new users to sign up".
 
-Yang berubah di database: hanya akun admin yang boleh menulis; produk tersembunyi tidak bisa dibaca pengunjung; pesanan palsu dibatasi (status dipaksa 'baru', waktu dari server, nomor unik); upload hanya gambar/video oleh admin; aksi "hapus semua" tercatat di tabel `audit_log`.
+Yang berubah di database: hanya akun admin yang boleh menulis (termasuk membaca produk tersembunyi dan menulis `audit_log`); produk tersembunyi tidak bisa dibaca pengunjung; pesanan palsu dibatasi (status dipaksa 'baru', waktu dari server, nomor unik, items divalidasi dan total dihitung ulang dari harga di database, ongkir hanya Rp25.000/Rp60.000, maks 20 pesanan per menit); upload hanya gambar/video oleh admin (mimetype + ekstensi diperiksa); harga produk tidak boleh negatif dan nama tidak boleh kosong; aksi "hapus semua" tercatat di tabel `audit_log`.
 
 ## Perubahan 27 Nov 2026 (perbaikan bug, ronde 2)
 - Halaman Wanita tidak lagi kosong: kalau Supabase belum punya produk wanita, katalog contoh wanita ikut tampil.
@@ -69,3 +69,11 @@ Yang berubah di database: hanya akun admin yang boleh menulis; produk tersembuny
 - Arsip kosong kini memakai data contoh (seperti produk); arsip format lama tidak lagi berubah gender saat disimpan; video gagal load kini bisa dicoba lagi; admin tidak bisa menyimpan produk tanpa nama seharga Rp 0; tipe barang tak dikenal tidak lagi tampil "undefined"; pencarian direset saat pindah gender.
 - Keamanan: aturan akses diperketat (lihat "Menerapkan perbaikan keamanan"), script Supabase memakai SRI, ID produk di-escape di HTML, gambar rusak diganti placeholder, file di storage ikut terhapus saat referensinya dihapus, "hapus semua" tercatat di `audit_log`, katalog contoh diberi penanda.
 - Layout: judul toko + pencarian bisa wrap di HP, carousel diberi fade di tepi, menu dropdown bisa dibuka dengan keyboard, kutipan boleh wrap di layar kecil, banner cookie tidak menutupi footer.
+
+## Perubahan 28 Nov 2026 (perbaikan audit bug, ronde 3)
+- **Keamanan (penting):** daftar pesanan admin tidak lagi menelan mentah jumlah item pesanan (stored XSS) — semua field kini di-escape. Total pesanan kini divalidasi dan dihitung ulang di server dari harga produk di database (trigger); ongkir hanya Rp25.000/Rp60.000; pesanan dibatasi maks 20 per menit. Kebijakan baca produk admin dan tulis audit_log kini hanya untuk akun admin; harga produk tidak boleh negatif dan nama tidak boleh kosong; upload media diperiksa ekstensi filenya juga.
+- **Checkout:** validasi keranjang kini fail-closed (gagal verifikasi = pesanan ditolak, bukan diloloskan) dan memeriksa ukuran masih tersedia; produk contoh tidak bisa dipesan; isi form checkout tersimpan saat halaman di-refresh; telepon wajib diisi dan kode pos harus 5 digit; fokus kursor tidak lagi hilang saat halaman checkout di-render ulang; header tidak lagi menutupi bagian atas checkout.
+- **Toko:** katalog contoh hanya tampil kalau database benar-benar kosong (bukan saat koneksi gagal — kalau gagal, tampil pesan error); tautan produk yang sudah dihapus menampilkan "Produk tidak ditemukan".
+- **Admin:** hapus foto di form edit baru benar-benar menghapus file setelah simpan berhasil; gagal simpan tidak lagi menghapus isian form; "hapus semua" kini ikut membersihkan file media; daftar pesanan dibatasi 50 terbaru dengan tombol "Muat lagi"; harga desimal ditolak dengan benar (step 1).
+- **Lainnya:** label batas video disamakan jadi 50 MB; font yang tidak dipakai dihapus; carousel Kronologi dengan 1 item tidak lagi bercelah; `og:url` diperbaiki ke x-official.vercel.app; kode mati dibersihkan.
+- **Masih perlu Anda:** jalankan `supabase.sql` baru di SQL Editor (lihat "Menerapkan perbaikan keamanan") — tanpa itu, validasi server di atas belum aktif di database live; ubah tipe arsip "Hoodie" dari tee menjadi hood lewat dashboard; sediakan gambar Open Graph yang lebih kecil (saat ini 2,4 MB).
