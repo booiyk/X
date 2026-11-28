@@ -18,6 +18,14 @@
 -- 4. Upload file hanya gambar/video dan hanya oleh admin; file yang dihapus dari
 --    produk ikut dihapus dari storage oleh aplikasi.
 -- 5. Tabel audit_log: mencatat aksi "hapus semua" dari dashboard.
+--
+-- Perubahan 28 Nov 2026 (perbaikan audit bug, ronde 3):
+-- 6. Trigger pesanan kini memvalidasi items dan menghitung ulang total dari
+--    harga produk di DB; ongkir hanya 25000/60000; rate limit 20 pesanan/menit.
+-- 7. Kebijakan "baca produk admin" dan "audit tulis" kini hanya untuk admin
+--    (sebelumnya semua akun login); products punya CHECK harga >= 0 dan nama
+--    tidak kosong.
+-- 8. Upload media kini juga memeriksa ekstensi file (selain mimetype).
 
 -- ===== Admin: hanya akun dengan email ini yang boleh menulis =====
 create or replace function public.is_admin()
@@ -85,7 +93,7 @@ drop policy if exists "baca produk admin" on products;
 drop policy if exists "baca arsip"   on archive;
 drop policy if exists "baca tampilan" on site;
 create policy "baca produk anon"  on products for select to anon using (hidden = false);
-create policy "baca produk admin" on products for select to authenticated using (true);
+create policy "baca produk admin" on products for select to authenticated using (public.is_admin());
 create policy "baca arsip"    on archive  for select using (true);
 create policy "baca tampilan" on site     for select using (true);
 
@@ -119,22 +127,67 @@ begin
   if not exists (select 1 from pg_constraint where conname = 'orders_ship_nonneg') then
     alter table orders add constraint orders_ship_nonneg check (ship is null or ship >= 0);
   end if;
+  if not exists (select 1 from pg_constraint where conname = 'products_p_nonneg') then
+    alter table products add constraint products_p_nonneg check (p >= 0);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'products_n_nonkosong') then
+    alter table products add constraint products_n_nonkosong check (char_length(trim(n)) > 0);
+  end if;
 end $$;
 
--- Trigger: paksa status 'baru' dan waktu server pada setiap pesanan baru,
--- apa pun yang dikirim client (mencegah status palsu 'selesai' dan timestamp palsu)
+-- Trigger: validasi pesanan di server sebelum disimpan.
+-- - status selalu dipaksa 'baru', waktu selalu dari server
+-- - items harus array JSONB; tiap item punya id/n/z dan q integer > 0
+-- - tiap id harus ada di products dan tidak hidden; total dihitung ulang
+--   dari harga produk di DB + ongkir (ongkir hanya 25000 atau 60000)
+-- - rate limit: tolak bila sudah ada 20 pesanan dalam 60 detik terakhir
+-- Fungsi ini SECURITY DEFINER supaya hitung total dan rate limit jalan
+-- apa pun aturan RLS yang berlaku untuk pembeli.
 create or replace function public.orders_insert_guard()
 returns trigger
 language plpgsql
+security definer
 as $$
+declare
+  v_total integer := 0;
+  v_item jsonb;
+  v_pid text;
+  v_price integer;
+  v_hidden boolean;
+  v_qty integer;
 begin
   new.status := 'baru';
   new.ts := (extract(epoch from now()) * 1000)::bigint;
-  if new.total is not null and new.total < 0 then
-    raise exception 'total tidak boleh negatif';
+  if (select count(*) from orders where ts > (extract(epoch from now()) * 1000)::bigint - 60000) >= 20 then
+    raise exception 'terlalu banyak pesanan, coba lagi sebentar';
   end if;
-  if new.ship is not null and new.ship < 0 then
-    raise exception 'ongkir tidak boleh negatif';
+  if new.ship is not null and new.ship not in (25000, 60000) then
+    raise exception 'ongkir tidak dikenal';
+  end if;
+  if new.items is null or jsonb_typeof(new.items) <> 'array' or jsonb_array_length(new.items) = 0 then
+    raise exception 'items pesanan tidak valid';
+  end if;
+  for v_item in select * from jsonb_array_elements(new.items)
+  loop
+    if not (v_item ? 'id' and v_item ? 'n' and v_item ? 'z' and v_item ? 'q') then
+      raise exception 'item pesanan tidak lengkap';
+    end if;
+    v_pid := v_item ->> 'id';
+    if jsonb_typeof(v_item -> 'q') <> 'number' or (v_item ->> 'q')::numeric % 1 <> 0 or (v_item ->> 'q')::integer <= 0 then
+      raise exception 'jumlah item tidak valid';
+    end if;
+    v_qty := (v_item ->> 'q')::integer;
+    select p, hidden into v_price, v_hidden from products where id = v_pid;
+    if not found then
+      raise exception 'produk tidak ditemukan: %', v_pid;
+    end if;
+    if v_hidden then
+      raise exception 'produk disembunyikan: %', v_pid;
+    end if;
+    v_total := v_total + v_price * v_qty;
+  end loop;
+  if new.total is null or new.total <> v_total + coalesce(new.ship, 0) then
+    raise exception 'total pesanan tidak cocok';
   end if;
   return new;
 end;
@@ -146,7 +199,7 @@ for each row execute function public.orders_insert_guard();
 -- ===== Audit: jejak aksi berbahaya dari dashboard =====
 drop policy if exists "audit tulis" on audit_log;
 drop policy if exists "audit baca" on audit_log;
-create policy "audit tulis" on audit_log for insert to authenticated with check (true);
+create policy "audit tulis" on audit_log for insert to authenticated with check (public.is_admin());
 create policy "audit baca" on audit_log for select to authenticated using (public.is_admin());
 
 -- ===== Tempat penyimpanan foto dan video =====
@@ -160,6 +213,7 @@ create policy "media baca"  on storage.objects for select using (bucket_id = 'me
 create policy "media tulis" on storage.objects for insert to authenticated
   with check (bucket_id = 'media'
     and public.is_admin()
-    and ((metadata ->> 'mimetype') like 'image/%' or (metadata ->> 'mimetype') like 'video/%'));
+    and ((metadata ->> 'mimetype') like 'image/%' or (metadata ->> 'mimetype') like 'video/%')
+    and name ~* '\.(jpe?g|png|webp|gif|mp4|webm|mov|m4v)$');
 create policy "media ubah"  on storage.objects for update to authenticated using (bucket_id = 'media' and public.is_admin());
 create policy "media hapus" on storage.objects for delete to authenticated using (bucket_id = 'media' and public.is_admin());
