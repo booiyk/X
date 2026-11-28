@@ -744,9 +744,13 @@ const subtotal=()=>cart.reduce((a,c)=>{const i=PM(c.id);return a+(i?c.q*i.p:0)},
 let lastCount=0;
 function drawCart(bounce){
   if(!LOADED) return;
-  // Pastikan keranjang hanya me-render barang yang ada
-  cart = cart.filter(c => { const item = PM(c.id); return item !== undefined && item !== null; });
-  saveCart(); // Simpan hasil filter
+  // Pastikan keranjang hanya me-render barang yang ada.
+  // Saat produk gagal dimuat (LOADERR) jangan filter: keranjang dipertahankan
+  // apa adanya sampai data berhasil dimuat.
+  if(!LOADERR){
+    cart = cart.filter(c => { const item = PM(c.id); return item !== undefined && item !== null; });
+    saveCart(); // Simpan hasil filter
+  }
   
   const n=cart.reduce((a,c)=>a+c.q,0);
   $('#cn').textContent=n;$('#dsum').textContent=R(subtotal());$('#dgo').hidden=!n;
@@ -754,6 +758,7 @@ function drawCart(bounce){
   lastCount=n;
   $('#ditems').innerHTML=n?cart.map((c,k)=>{
     const i=PM(c.id);
+    if(!i)return `<div class="ditem"><div class="th">${S.tee}</div><div><b>Produk tidak dapat dimuat</b><small>${esc(c.z)}</small></div><span>—</span></div>`;
     return `<div class="ditem"><div class="th">${pic(i)}</div><div><b>${esc(i.n)}</b><small>${esc(c.z)}</small><div class="qty"><button data-k="${k}" data-d="-1" aria-label="Kurangi">−</button>${c.q}<button data-k="${k}" data-d="1" aria-label="Tambah">+</button></div></div><span>${R(i.p*c.q)}</span></div>`
   }).join(''):'<p class="emp">Keranjang Anda kosong.</p>';
   if(!$('#checkout').hidden)renderCo();
